@@ -1,0 +1,1 @@
+export {default as getEquipments} from './getEquipments.json'
