@@ -55,7 +55,7 @@ export default function StylingRowsGrid() {
   }
 
   function addNewRecord() {
-    router.push("/calibration/new");
+    router.push("/calibrations/new");
   }
 
   return (
