@@ -30,7 +30,7 @@ const CalibrationTable = ({ columns, rows }) => {
           {rows ? (
             rows.map((el) => (
               <tr
-                className="p-2 cursor-pointer hover:bg-slate-50 text-sm"
+                className="p-2 cursor-pointer hover:bg-slate-50 text-sm text-center"
                 onClick={() => showInstrumentDetails(el.erlId.slice(8))}
               >
                 <td className="border p-2">{el?.erlId}</td>

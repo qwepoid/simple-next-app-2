@@ -8,7 +8,7 @@ export const getExpiringSoonClassName = (calibDueDate: string) => {
     const diff = (parsedDate?.getTime() || 0) - today.getTime();
     diffDays = Math.ceil(diff / (1000 * 3600 * 24));
     if (diffDays <= 60) {
-      return "bg-red-500";
+      return "bg-red-500 text-white";
     }
   }
   return "";

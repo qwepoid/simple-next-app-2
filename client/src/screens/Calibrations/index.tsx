@@ -11,12 +11,13 @@ import Chip from "../../components/Chip";
 import { useEffect, useState } from "react";
 import CalibrationTable from "./CalibrationTable";
 import EquipmentSearch from "./EquipmentSearch";
+import { useRouter } from "next/router";
 
 export default function StylingRowsGrid() {
   const [onScreenCalibrations, setOnScreenCalibrations] = useState([]);
   const [searchString, setSearchString] = useState("");
   const { calibrationData } = useGetCalibrationData({ searchString });
-
+  const router = useRouter();
   const {
     addCalibrationSuccessData,
     addCalibration,
@@ -53,6 +54,10 @@ export default function StylingRowsGrid() {
     setSearchString(searchQuery);
   }
 
+  function addNewRecord() {
+    router.push("/calibration/new");
+  }
+
   return (
     <div className="flex flex-col justify-start items-start h-full">
       <div className="flex w-full justify-between items-center">
@@ -65,6 +70,12 @@ export default function StylingRowsGrid() {
           onClick={() => downloadCurrentScreenData(onScreenCalibrations)}
         >
           Download Screen Data
+        </button>
+        <button
+          className="border p-1 h-fit rounded-lg bg-blue-400 text-white"
+          onClick={addNewRecord}
+        >
+          Add new equipment
         </button>
       </div>
       {!searchString && calibrationData && (
