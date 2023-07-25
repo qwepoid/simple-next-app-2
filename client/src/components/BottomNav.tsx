@@ -1,6 +1,10 @@
 import { useRouter } from "next/router";
+import { useContext } from "react";
+import AuthContext from "../context/auth-context/AuthContext";
 
 const BottomNav = () => {
+  const { isAuthenticated } = useContext(AuthContext);
+  if (!isAuthenticated) return null;
   const router = useRouter();
   const handleHome = () => {
     history;

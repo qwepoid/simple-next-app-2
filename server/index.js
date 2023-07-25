@@ -28,6 +28,7 @@ import {
 import { MongoClient, ServerApiVersion } from "mongodb";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRouter.js";
+import scopeRouter from "./routes/scopeRouter.js";
 import mongoose from "mongoose";
 import ptRouter from "./routes/ptRouter.js";
 import equipmentsRouter from "./routes/equipmentsRouter.js";
@@ -120,6 +121,8 @@ app.use((req, res, next) => {
 app.use("/pt", ptRouter);
 
 app.use("/users", userRouter);
+
+app.use("/scope", scopeRouter);
 
 app.use("/equipments", equipmentsRouter);
 

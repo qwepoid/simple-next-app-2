@@ -5,13 +5,17 @@ import AuthContext from "../context/auth-context/AuthContext";
 const Headers = () => {
   const router = useRouter();
   const { isAuthenticated, logout } = useContext(AuthContext);
+  console.log(router.pathname);
   const btnStyle =
     "p-2 hover:underline underline-offset-8 font-semibold text-gray-700";
   return (
-    <div className="pb-12 hidden md:grid grid-cols-12 gap-3 fixed w-full bg-gradient-to-b from-yellow-300">
+    <div className="hidden md:grid grid-cols-12 gap-3 sticky top-0 w-full bg-gradient-to-b from-yellow-300">
       {isAuthenticated ? (
         <>
-          <button className={btnStyle} onClick={() => router.push("/")}>
+          <button
+            className={`${btnStyle} ${router.pathname === "/" && "underline"}`}
+            onClick={() => router.push("/")}
+          >
             Home
           </button>
           <button className={btnStyle} onClick={() => router.push("/payments")}>
@@ -20,11 +24,18 @@ const Headers = () => {
           <button className={btnStyle} onClick={() => router.push("/codes")}>
             Codes
           </button>
-          <button className={btnStyle} onClick={() => router.push("/pt-ilc")}>
+          <button
+            className={`${btnStyle} ${
+              router.pathname.includes("pt-ilc") && "underline"
+            }`}
+            onClick={() => router.push("/pt-ilc")}
+          >
             PT and ILC
           </button>
           <button
-            className={btnStyle}
+            className={`${btnStyle} ${
+              router.pathname.includes("calibrations") && "underline"
+            }`}
             onClick={() => router.push("/calibrations")}
           >
             Calibrations

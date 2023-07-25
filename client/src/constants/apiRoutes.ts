@@ -5,6 +5,7 @@ function getUrl(url): string {
 export const apiRoutes = {
     getEquipments: getUrl('/api/getEquipments'),
     getDashboardData: getUrl('/api/getDashboardData'),
+    getTestParameters: getUrl('/scope/getTestParameters'),
     signup: getUrl('/users/signup'),
     signin: getUrl('/users/signin'),
     getPtRecords: getUrl('/pt/getRecords')

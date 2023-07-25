@@ -70,6 +70,7 @@ export default function StylingRowsGrid() {
       {!searchString && calibrationData && (
         <Chip
           items={generateFilterData(calibrationData, handleCalibrationFilters)}
+          showCount
         />
       )}
       <CalibrationTable columns={columns} rows={onScreenCalibrations} />
