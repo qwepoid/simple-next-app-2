@@ -8,7 +8,7 @@ const Headers = () => {
   const btnStyle =
     "p-2 hover:underline underline-offset-8 font-semibold text-gray-700";
   return (
-    <div className="pb-12 hidden md:grid grid-cols-12 gap-3 fixed w-full bg-gradient-to-b from-yellow-300">
+    <div className="pb-4 hidden md:grid grid-cols-12 gap-3 fixed w-full border-b-2 bg-white">
       {isAuthenticated ? (
         <>
           <button className={btnStyle} onClick={() => router.push("/")}>

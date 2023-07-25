@@ -32,6 +32,17 @@ const NewRecord = () => {
     let files = e.target.files[0];
     setDataUrl(URL.createObjectURL(files));
   }
+
+  function shouldBeDisabled() {
+    return Boolean(
+      !formik.values.equipmentName ||
+        !formik.values.ulr ||
+        !formik.values.calibrationBy ||
+        !formik.values.calibrationFrom ||
+        !formik.values.calibrationTo
+    );
+  }
+  const isDisabled = shouldBeDisabled();
   return (
     <div className="mt-4">
       <form onSubmit={formik.handleSubmit}>
@@ -137,7 +148,14 @@ const NewRecord = () => {
               </label>
               <input type="file" onChange={handleFileUpload} />
             </div>
-            <button className="bg-blue-500 text-white p-2 rounded-lg col-span-2 w-40 place-self-center mb-10">
+            <button
+              className={`p-2 rounded-lg col-span-2 w-40 place-self-center mb-10 ${
+                isDisabled
+                  ? "bg-gray-100 text-gray-400 font-medium border-gray-900 border-b"
+                  : "bg-blue-500 text-white"
+              }`}
+              disabled={isDisabled}
+            >
               Add equipment
             </button>
           </div>
