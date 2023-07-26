@@ -14,11 +14,12 @@ const AddNewRecord = () => {
 
   const formik = useFormik({
     initialValues: {
-      material: "",
-      discipline: "",
+      material: "select",
+      discipline: "select",
       ptProvider: "",
       uniqueId: "",
       dateOfPt: "",
+      testParameters: [],
     },
     onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
@@ -35,19 +36,33 @@ const AddNewRecord = () => {
   function shouldBeDisabled() {
     return Boolean(
       !formik.values.material ||
-        formik.values.material === "Select" ||
+        formik.values.material === "select" ||
         !formik.values.discipline ||
-        formik.values.discipline === "Select" ||
+        formik.values.discipline === "select" ||
         !formik.values.ptProvider ||
         !formik.values.uniqueId ||
-        !formik.values.dateOfPt
+        !formik.values.dateOfPt ||
+        !formik.values.testParameters.length
     );
   }
   const isDisabled = shouldBeDisabled();
   const { data: paramters, getRecords } = useGetTestParameters();
+
   useEffect(() => {
+    formik.values.testParameters = [];
     if (formik.values.material.length) getRecords(formik.values.material);
   }, [formik.values.material]);
+
+  function handleParameterSelection(idx) {
+    let selectedParameter = paramters[idx];
+    if (formik.values.testParameters.includes(selectedParameter)) {
+      formik.values.testParameters = formik.values.testParameters.filter(
+        (param) => param != selectedParameter
+      );
+      return;
+    }
+    formik.values.testParameters.push(paramters[idx]);
+  }
 
   return (
     <div className="mt-4">
@@ -62,13 +77,15 @@ const AddNewRecord = () => {
               <select
                 id="material"
                 className="outline-none border rounded-lg p-2 focus:border-blue-500"
-                // onChange={(e) => setSelectedMaterial(e.target.value)}
-                // value={selectedMaterial}
                 onChange={formik.handleChange}
                 value={formik.values.material}
               >
-                <option>Select</option>
-                <option value="Soil">Soil</option>
+                <option selected disabled hidden value="select">
+                  Select
+                </option>
+                <option value="Micro Silica / Silica Fumes">
+                  Micro Silica / Silica Fumes
+                </option>
                 <option value="Cement">Cement</option>
                 <option value="Paver Block">Paver Block</option>
               </select>
@@ -81,16 +98,22 @@ const AddNewRecord = () => {
                 onChange={formik.handleChange}
                 className="outline-none border rounded-lg p-2 focus:border-blue-500"
               >
-                <option>Select</option>
-                <option>Mechanical</option>
-                <option>Chemical</option>
-                <option>NDT</option>
+                <option selected disabled hidden value="select">
+                  Select
+                </option>
+                <option value="Mechanical">Mechanical</option>
+                <option value="Chemical">Chemical</option>
+                <option value="NDT">NDT</option>
               </select>
             </div>
             <div className="lg:col-span-2 flex-wrap flex w-auto">
               <label className="text-xs text-gray-400">Test Parameters*</label>
               <Chip
-                items={generateParametersChips(paramters, () => {})}
+                key={formik.values.material}
+                items={generateParametersChips(
+                  paramters,
+                  handleParameterSelection
+                )}
                 showCount={false}
                 multiSelect
               />
