@@ -2,7 +2,12 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import Chip from "../../../components/Chip";
 import { generateParametersChips } from "./utils";
-import useGetTestParameters from "../service-hooks/useGetTestParameters";
+import useGetparameters from "../service-hooks/useGetTestParameters";
+import { TestMaterials } from "./constants";
+import useAddPtRecord from "../service-hooks/useAddPtRecord";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../../../firebaseConfig";
+import { useRouter } from "next/router";
 
 const AddNewRecord = () => {
   /**
@@ -12,25 +17,68 @@ const AddNewRecord = () => {
    * 3. Move input and label into a common components folder
    */
 
+  const router = useRouter();
+  const { addRecord } = useAddPtRecord();
+
   const formik = useFormik({
     initialValues: {
       material: "select",
       discipline: "select",
       ptProvider: "",
-      uniqueId: "",
+      ref: "",
       dateOfPt: "",
-      testParameters: [],
+      parameters: [],
+      pdfUrl: null,
     },
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      console.log("on onsubmit");
+      if (!values.pdfUrl) {
+        alert("Please upload the pdf");
+        return;
+      }
+      const modifiedRef = values.ref.replaceAll("/", ":");
+      const bucketFileName = `pt/${modifiedRef}.pdf`;
+      const storageRef = ref(storage, bucketFileName);
+      uploadBytes(storageRef, values.pdfUrl)
+        .then((snapshot) => {
+          const fileRef = ref(storage, bucketFileName);
+
+          getDownloadURL(fileRef).then((url) => {
+            formik.values.pdfUrl = url;
+            addRecord(values);
+          });
+        })
+        .catch((err) => console.log("failure: ", err));
     },
   });
 
   const [dataUrl, setDataUrl] = useState("");
 
   function handleFileUpload(e) {
-    let files = e.target.files[0];
-    setDataUrl(URL.createObjectURL(files));
+    let file = e.target.files[0];
+    formik.values.pdfUrl = file;
+
+    // let reader = new FileReader();
+    // reader.addEventListener("load", (e) => console.log(e.target.result));
+
+    // BELOW CODE WORKS
+    // reader.onload = () => {
+    //   formik.values.pdf = reader.result as ArrayBuffer;
+    //   const arrayBuffer = formik.values.pdf;
+    //   const blob = new Blob([arrayBuffer], { type: "application/pdf" });
+    //   const pdfUrl = URL.createObjectURL(blob);
+
+    //   const downloadLink = document.createElement("a");
+    //   downloadLink.href = pdfUrl;
+    //   downloadLink.download = "your-file-name.pdf"; // Set the desired file name
+    //   document.body.appendChild(downloadLink);
+    //   downloadLink.click();
+    //   document.body.removeChild(downloadLink);
+    //   // console.log(reader.result);
+    // };
+    // reader.readAsText(files);
+
+    setDataUrl(URL.createObjectURL(file));
   }
 
   function shouldBeDisabled() {
@@ -40,28 +88,28 @@ const AddNewRecord = () => {
         !formik.values.discipline ||
         formik.values.discipline === "select" ||
         !formik.values.ptProvider ||
-        !formik.values.uniqueId ||
+        !formik.values.ref ||
         !formik.values.dateOfPt ||
-        !formik.values.testParameters.length
+        !formik.values.parameters.length
     );
   }
   const isDisabled = shouldBeDisabled();
-  const { data: paramters, getRecords } = useGetTestParameters();
+  const { data: paramters, getRecords } = useGetparameters();
 
   useEffect(() => {
-    formik.values.testParameters = [];
+    formik.values.parameters = [];
     if (formik.values.material.length) getRecords(formik.values.material);
   }, [formik.values.material]);
 
   function handleParameterSelection(idx) {
     let selectedParameter = paramters[idx];
-    if (formik.values.testParameters.includes(selectedParameter)) {
-      formik.values.testParameters = formik.values.testParameters.filter(
+    if (formik.values.parameters.includes(selectedParameter)) {
+      formik.values.parameters = formik.values.parameters.filter(
         (param) => param != selectedParameter
       );
       return;
     }
-    formik.values.testParameters.push(paramters[idx]);
+    formik.values.parameters.push(paramters[idx]);
   }
 
   return (
@@ -83,11 +131,9 @@ const AddNewRecord = () => {
                 <option selected disabled hidden value="select">
                   Select
                 </option>
-                <option value="Micro Silica / Silica Fumes">
-                  Micro Silica / Silica Fumes
-                </option>
-                <option value="Cement">Cement</option>
-                <option value="Paver Block">Paver Block</option>
+                {TestMaterials.map((material) => (
+                  <option value={material}>{material}</option>
+                ))}
               </select>
             </div>
             <div className="w-48 flex flex-col">
@@ -107,7 +153,9 @@ const AddNewRecord = () => {
               </select>
             </div>
             <div className="lg:col-span-2 flex-wrap flex w-auto">
-              <label className="text-xs text-gray-400">Test Parameters*</label>
+              <label className="text-xs text-gray-400 w-full mb-2">
+                Test Parameters*
+              </label>
               <Chip
                 key={formik.values.material}
                 items={generateParametersChips(
@@ -126,7 +174,6 @@ const AddNewRecord = () => {
               <input
                 id="ptProvider"
                 className="outline-none border-2 rounded-lg p-2 w-96 col-span-2"
-                placeholder="TC-XXXX-XXXX-XXXX*"
                 onChange={formik.handleChange}
                 value={formik.values.ptProvider}
               />
@@ -134,11 +181,11 @@ const AddNewRecord = () => {
             <div className="w-96 flex flex-col">
               <label className="text-xs text-gray-400">Unique Id*</label>
               <input
-                id="uniqueId"
+                id="ref"
                 type="text"
                 className="outline-none border-2 rounded-lg p-2 mr-2 w-48"
                 onChange={formik.handleChange}
-                value={formik.values.uniqueId}
+                value={formik.values.ref}
               />
             </div>
             <div className="w-96 flex flex-col">

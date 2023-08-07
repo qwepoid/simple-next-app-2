@@ -1,14 +1,14 @@
 import { useContext } from "react"
 import AuthContext from "../../context/auth-context/AuthContext"
 
-const makeApiCall = async ({url, payload, method='GET'}: {url: string, payload?: any, method?: any}) => {
+const makeApiCall = async ({url, payload, method='GET', contentType='application/json'}: {url: string, payload?: any, method?: any, contentType?: any}) => {
     // const { username }= useContext(AuthContext)
     // const headers = prepareHeaders()
     const data = await fetch(url, {
         method,
         body: payload ? JSON.stringify(payload) : undefined,
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': contentType,
             // 'Authorization': `Bearer `
         }
     })

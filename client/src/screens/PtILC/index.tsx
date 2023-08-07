@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import useGetPtRecords from "./service-hooks/useGetPtRecords";
 
 const PtILC = () => {
+  const { data, refetchPtRecords } = useGetPtRecords();
   const [currentSelection, setCurrentSelection] = useState(0);
   const [addNewEntry, setAddNewEntry] = useState(false);
   const router = useRouter();
@@ -14,7 +15,10 @@ const PtILC = () => {
     router.push("pt-ilc/new");
   }
 
-  const { data, isLoading, error } = useGetPtRecords();
+  function handleDeleteInChild() {
+    refetchPtRecords();
+  }
+
   return (
     <div>
       <div className="grid grid-cols-10">
@@ -54,32 +58,14 @@ const PtILC = () => {
 
           <AwaitedPT />
           <br />
-          <RecordsPT addNewEntry={addNewEntry} records={data} />
+          <RecordsPT
+            addNewEntry={addNewEntry}
+            records={data}
+            onDeleteRecord={handleDeleteInChild}
+          />
         </div>
       </div>
     </div>
-    //
-    // <div>
-    //   <div className="border-b-2 border-b-black pb-2 flex justify-between mb-4">
-    //     <span className="text-xl font-bold ">Chemical</span>
-    //   </div>
-    //   <div className="flex gap-2 mb-4 flex-wrap">
-    //     <ChemicalConsolidatedData />
-    //   </div>
-    //   <div className="border-b-2 border-b-black pb-2 flex justify-between mb-8">
-    //     <span className="text-xl font-bold ">Mechanical</span>
-    //   </div>
-    //   <div className="flex gap-2 mb-4 flex-wrap">
-    //     <MechanicalConsolidatedData />
-    //   </div>
-    //   <div className="border-b-2 border-b-black pb-2 flex justify-between mb-8">
-    //     <span className="text-xl font-bold ">NDT</span>
-    //   </div>
-    //   <div className="flex gap-2 mb-4 flex-wrap">
-    //     <NDTConsolidatedData />
-    //   </div>
-    //   <PtIlcTable />
-    // </div>
   );
 };
 

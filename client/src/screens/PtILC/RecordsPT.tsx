@@ -1,13 +1,25 @@
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../../firebaseConfig";
 import { useRef } from "react";
-import { handleFileDownload } from "./utils";
+import { handleFileDownload, sortByDate } from "./utils";
+import Image from "next/image";
+import Delete from "../../../public/delete.svg";
+import useDeletePtRecord from "./service-hooks/useDeletePtRecord";
 
-const RecordsPT = ({ addNewEntry = false, records }) => {
+const RecordsPT = ({ addNewEntry = false, records, onDeleteRecord }) => {
   const inputRef = useRef(null);
+  const { deleteRecord } = useDeletePtRecord();
 
   function handleUploadClick() {
     inputRef.current.click();
+  }
+
+  if (records) {
+    records?.sort(sortByDate);
+  }
+
+  function handleDelete(id) {
+    deleteRecord({ id }).then(() => onDeleteRecord());
   }
 
   function handleFileUpload(e) {
@@ -31,9 +43,11 @@ const RecordsPT = ({ addNewEntry = false, records }) => {
           <th className="p-2 border">S.No.</th>
           <th className="p-2 border">Agency</th>
           <th className="p-2 border">Ref. No</th>
+          <th className="p-2 border">Date</th>
           <th className="p-2 border">Discipline</th>
           <th className="p-2 border">Material</th>
           <th className="p-2 border">Report</th>
+          <th className="p-2 border">Actions</th>
         </tr>
         {addNewEntry && (
           <>
@@ -81,23 +95,37 @@ const RecordsPT = ({ addNewEntry = false, records }) => {
             <button>Submit</button>
           </>
         )}
-        {records?.map(({ agency, ref, discipline, material }, index) => (
-          <tr>
-            <td className="p-2 border">{index + 1}</td>
-            <td className="p-2 border">{agency}</td>
-            <td className="p-2 border">{ref}</td>
-            <td className="p-2 border">{discipline}</td>
-            <td className="p-2 border">{material}</td>
-            <td className="p-2 border text-center">
-              <div
-                className="text-center text-blue-500 underline cursor-pointer"
-                onClick={() => handleFileDownload(ref)}
-              >
-                Download
-              </div>
-            </td>
-          </tr>
-        ))}
+        {records?.map(
+          ({ ptProvider, ref, discipline, material, _id, dateOfPt }, index) => (
+            <tr>
+              <td className="p-2 border">{index + 1}</td>
+              <td className="p-2 border">{ptProvider}</td>
+              <td className="p-2 border">{ref}</td>
+              <td className="p-2 border">
+                {new Date(dateOfPt).toLocaleDateString()}
+              </td>
+              <td className="p-2 border">{discipline}</td>
+              <td className="p-2 border">{material}</td>
+              <td className="p-2 border text-center">
+                <div
+                  className="text-center text-blue-500 underline cursor-pointer"
+                  onClick={() => handleFileDownload(ref)}
+                >
+                  Download
+                </div>
+              </td>
+              <td className="p-2 border text-center">
+                <Image
+                  className="cursor-pointer hover:scale-110"
+                  height={28}
+                  width={28}
+                  src={Delete}
+                  onClick={() => handleDelete(_id)}
+                />
+              </td>
+            </tr>
+          )
+        )}
       </table>
     </>
   );

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import getPtRecords from "../../../services/pt/getPtRecords";
 
 const useGetPtRecords = () => {
-    console.log('inside pt hook')
     const [data, setData ]= useState(null);
     const [isLoading, setisLoading ]= useState(true);
     const [error, seterror ]= useState(null);
@@ -10,10 +9,8 @@ const useGetPtRecords = () => {
     async function getRecords() {
         try {
             const response = await getPtRecords()
-            console.log('response: ',  response)
             setData(response)
         } catch (err) {
-            console.log('err: ',  err)
             seterror(err);
         } finally {
             setisLoading(false)
@@ -24,8 +21,13 @@ const useGetPtRecords = () => {
         getRecords()
     }, [])
 
+    function refetchPtRecords() {
+        getRecords()
+    }
+
     return {
         data,
+        refetchPtRecords,
         isLoading,
         error
     }
