@@ -1,1 +1,1 @@
-export { default } from "../../src/screens/Quotations/NewQuotation";
+export { default } from "../../src/screens/Quotations/NewPoc";

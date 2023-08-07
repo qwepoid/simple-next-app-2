@@ -1,19 +1,10 @@
-import { Field, FieldArray, FormikProvider, useFormik } from "formik";
-import { useEffect, useState } from "react";
-import Chip from "../../../components/Chip";
+import { useFormik } from "formik";
+import { useState } from "react";
 import Image from "next/image";
 import { NablLogo } from "../../../../public";
-// import { generateParametersChips } from "./utils";
-// import useGetTestParameters from "../service-hooks/useGetTestParameters";
+import { PDFDocument, PDFImage, StandardFonts, rgb } from "pdf-lib";
 
-const NewQuotation = () => {
-  /**
-   * TODO:
-   * 1. Add length validations on text inputs
-   * 2. Add date validations
-   * 3. Move input and label into a common components folder
-   */
-
+const NewPoc = () => {
   const formik = useFormik({
     initialValues: {
       quotationTo: "",
@@ -33,6 +24,116 @@ const NewQuotation = () => {
   function handleFileUpload(e) {
     let files = e.target.files[0];
     setDataUrl(URL.createObjectURL(files));
+  }
+
+  let image: PDFImage;
+
+  const loadImageAsBase64 = async () => {
+    try {
+      // Replace 'your-image-file.jpg' with the actual path to your image in the assets folder
+      const response = await fetch("../../../../public/nablLogo.png");
+      const blob = await response.blob();
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // The result will be the Base64 representation of the image
+        const base64String = reader.result;
+        return base64String;
+      };
+
+      return reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error("Error loading image:", error);
+    }
+  };
+
+  //   async function readImage() {
+  //     const response = await getBase64(NablLogo);
+  //     const pdfData = await response.arrayBuffer();
+  //     return pdfData;
+  //     // image = await pdfDoc.embedPng(imageBytes);
+  //   }
+  const { width, height } = 0.5;
+
+  async function handlePdf() {
+    const pdfDoc = await PDFDocument.create();
+    let espData = await loadImageAsBase64();
+
+    console.log("----------------------------------------" + espData);
+    // const imageBytes = await readImage();
+
+    // const image = await pdfDoc.embedPng(imageBytes);
+
+    // const { width: imgWidth, height: imgHeight } = image.scale(0.5);
+
+    // Embed the Times Roman font
+    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
+    // Add a blank page to the document
+    const page = pdfDoc.addPage();
+
+    // Get the width and height of the page
+    const { width, height } = page.getSize();
+
+    // Draw a string of text toward the top of the page
+    const fontSize = 30;
+    page.drawText("ENGG RESEARCH LABS.", {
+      x: 140,
+      y: height - 40,
+      size: fontSize,
+      font: timesRomanFont,
+      color: rgb(0, 0.53, 0.71),
+    });
+    // page.drawImage(image, {
+    //   x: 240,
+    //   y: height - 40,
+    //   width: imgWidth,
+    //   height: imgHeight,
+    // });
+    page.drawText("(An NABL Accredited Lab)", {
+      x: 240,
+      y: height - 60,
+      size: 12,
+      font: timesRomanFont,
+      color: rgb(0, 0.53, 0.71),
+    });
+    page.drawText("(MATERIAL TESTING AND GEO-TECHNICAL INVESTIGATION LAB)", {
+      x: 120,
+      y: height - 80,
+      size: 12,
+      font: timesRomanFont,
+      color: rgb(0, 0.53, 0.71),
+    });
+
+    page.drawText(
+      "GROUND FLOOR, OSCAR GYM BUILDING, BABLIANA ROAD, GANGYAL, JAMMU - 180010",
+      {
+        x: 50,
+        y: height - 100,
+        size: 12,
+        font: timesRomanFont,
+        color: rgb(0, 0.53, 0.71),
+      }
+    );
+    page.drawText(
+      "Contact: 94191-85696 | E-mail: erljmu@rediffmail.com | Website: enggresearchlabs.com",
+      {
+        x: 90,
+        y: height - 120,
+        size: 12,
+        font: timesRomanFont,
+        color: rgb(0, 0.53, 0.71),
+      }
+    );
+
+    // Serialize the PDFDocument to bytes (a Uint8Array)
+    const pdfBytes = await pdfDoc.save();
+    // console.log(pdfBytes);
+    const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+    const downloadLink = document.createElement("a");
+    downloadLink.href = URL.createObjectURL(pdfBlob);
+    downloadLink.download = "example.pdf";
+    downloadLink.click();
   }
 
   //   function shouldBeDisabled() {
@@ -251,8 +352,9 @@ const NewQuotation = () => {
             >
               Add PT Record
             </button>
+            <button onClick={handlePdf}>Download Pdf</button>
           </div>
-          <div className="sm:hidden lg:block lg:grid lg:col-span-2 border border-black ml-4 p-4 w-[630px] h-[891px] rounded-md shadow-2xl hover:scale-125 flex flex-col flex-1 relative bg-white overflow-clip">
+          <div className="sm:hidden lg:block lg:grid lg:col-span-2 border border-black ml-4 p-4 w-[630px] h-[891px] rounded-md shadow-2xl flex flex-col flex-1 relative bg-white overflow-clip">
             <div className="header flex justify-center relative">
               <div className="flex flex-col items-center">
                 <span className="tex text-2xl font-serif font-medium">
@@ -284,13 +386,13 @@ const NewQuotation = () => {
               <div>
                 <span className="block text-sm">To</span>
                 {/* <textarea
-                  id="quotationTo"
-                  className="text-xs outline-none border-2 rounded-lg w-36 h-16 col-span-2"
-                  placeholder="Enter complete Address"
-                  onChange={formik.handleChange}
-                  value={formik.values.quotationTo}
-                  //   wrap="soft"
-                /> */}
+                      id="quotationTo"
+                      className="text-xs outline-none border-2 rounded-lg w-36 h-16 col-span-2"
+                      placeholder="Enter complete Address"
+                      onChange={formik.handleChange}
+                      value={formik.values.quotationTo}
+                      //   wrap="soft"
+                    /> */}
                 <span className="text-xs whitespace-pre-line leading-4 block">
                   {formik.values.quotationTo}
                 </span>
@@ -337,17 +439,17 @@ const NewQuotation = () => {
               For Engg. Research Labs
             </div>
             {/* <object
-              data={dataUrl}
-              type="application/pdf"
-              width="100%"
-              height="100%"
-              className="hidden lg:block"
-            >
-              <p>
-                Alternative text - include a link{" "}
-                <a href={dataUrl}>to the PDF!</a>
-              </p>
-            </object> */}
+                  data={dataUrl}
+                  type="application/pdf"
+                  width="100%"
+                  height="100%"
+                  className="hidden lg:block"
+                >
+                  <p>
+                    Alternative text - include a link{" "}
+                    <a href={dataUrl}>to the PDF!</a>
+                  </p>
+                </object> */}
           </div>
         </div>
       </form>
@@ -355,4 +457,4 @@ const NewQuotation = () => {
   );
 };
 
-export default NewQuotation;
+export default NewPoc;
