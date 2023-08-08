@@ -15,5 +15,5 @@ export function handleFileDownload(filename) {
 }
 
 export function sortByDate(a, b) {
-  new Date(a.dateOfPt).getTime() - new Date(b.dateOfPt).getTime();
+  return new Date(a.dateOfPt).getTime() - new Date(b.dateOfPt).getTime();
 }

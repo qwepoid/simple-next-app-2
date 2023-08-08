@@ -70,6 +70,7 @@ const Authentication = () => {
   return (
     <>
       <Popup
+        title="Auth Error"
         open={showPopup}
         onClose={handleClosePopup}
         message={errorMessage}

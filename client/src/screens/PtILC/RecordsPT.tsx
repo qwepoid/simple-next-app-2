@@ -1,14 +1,17 @@
 import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../../firebaseConfig";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { handleFileDownload, sortByDate } from "./utils";
 import Image from "next/image";
 import Delete from "../../../public/delete.svg";
+import Edit from "../../../public/edit.svg";
 import useDeletePtRecord from "./service-hooks/useDeletePtRecord";
+import Popup from "../../components/Popup";
 
 const RecordsPT = ({ addNewEntry = false, records, onDeleteRecord }) => {
   const inputRef = useRef(null);
   const { deleteRecord } = useDeletePtRecord();
+  const [deletionId, setDeletionId] = useState(null);
 
   function handleUploadClick() {
     inputRef.current.click();
@@ -19,7 +22,10 @@ const RecordsPT = ({ addNewEntry = false, records, onDeleteRecord }) => {
   }
 
   function handleDelete(id) {
-    deleteRecord({ id }).then(() => onDeleteRecord());
+    deleteRecord({ id }).then(() => {
+      setDeletionId(null);
+      onDeleteRecord();
+    });
   }
 
   function handleFileUpload(e) {
@@ -32,9 +38,15 @@ const RecordsPT = ({ addNewEntry = false, records, onDeleteRecord }) => {
       })
       .catch((err) => console.log("failure"));
   }
-
   return (
     <>
+      <Popup
+        title="Confirm Delete?"
+        onClose={() => setDeletionId(null)}
+        open={deletionId}
+        message="Are you sure you want to delete this record?"
+        onConfirm={() => handleDelete(deletionId)}
+      />
       <div className="mb-4 font-bold underline text-stone-600 text-xl">
         Records
       </div>
@@ -114,13 +126,20 @@ const RecordsPT = ({ addNewEntry = false, records, onDeleteRecord }) => {
                   Download
                 </div>
               </td>
-              <td className="p-2 border text-center">
+              <td className="p-2 border text-center flex items-center justify-center">
                 <Image
                   className="cursor-pointer hover:scale-110"
-                  height={28}
-                  width={28}
+                  height={20}
+                  width={20}
+                  src={Edit}
+                  onClick={() => {}}
+                />
+                <Image
+                  className="cursor-pointer hover:scale-110"
+                  height={24}
+                  width={24}
                   src={Delete}
-                  onClick={() => handleDelete(_id)}
+                  onClick={() => setDeletionId(_id)}
                 />
               </td>
             </tr>
