@@ -4,8 +4,8 @@ import AuthContext from "../context/auth-context/AuthContext";
 
 const BottomNav = () => {
   const { isAuthenticated } = useContext(AuthContext);
-  if (!isAuthenticated) return null;
   const router = useRouter();
+  if (!isAuthenticated) return null;
   const handleHome = () => {
     history;
     router.replace("/");
