@@ -30,7 +30,11 @@ import dotenv from "dotenv";
 import userRouter from "./routes/userRouter.js";
 import mongoose from "mongoose";
 import ptRouter from "./routes/ptRouter.js";
+import pdfRouter from "./routes/pdfRouter.js";
 import equipmentsRouter from "./routes/equipmentsRouter.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 dotenv.config();
 
 const uri = process.env.MONGODB_URI;
@@ -117,7 +121,29 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/nabl-logo", (req, res) => {
+  // const imagePath = path.join(__dirname, "nablLogo.png");
+  const imagePath = path.join(
+    fileURLToPath(import.meta.url),
+    "..",
+    "nablLogo.png"
+  );
+  fs.readFile(imagePath, (err, data) => {
+    if (err) {
+      console.log("reached here inside error", err);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Internal Server Error");
+    } else {
+      console.log("reached here inside success");
+      res.writeHead(200, { "Content-Type": "image/png" });
+      res.end(data);
+    }
+  });
+});
+
 app.use("/pt", ptRouter);
+
+app.use("/pdf", pdfRouter);
 
 app.use("/users", userRouter);
 

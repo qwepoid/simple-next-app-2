@@ -14,7 +14,9 @@ const NewPoc = () => {
       dateOfQuotation: "",
     },
     onSubmit: (values) => {
+      const payload = JSON.stringify(values);
       alert(JSON.stringify(values, null, 2));
+      downloadPdf(payload);
     },
   });
 
@@ -47,13 +49,30 @@ const NewPoc = () => {
     }
   };
 
+  async function downloadPdf(payload) {
+    fetch("http://localhost:5000/pdf/createQuotation", {
+      method: "POST",
+      body: payload,
+      headers: {
+        "Content-Type": "application/json",
+        // 'Authorization': `Bearer `
+      },
+    }).then(async () => {
+      const response = await fetch("http://localhost:5000/pdf/getQuotation"); // Adjust the URL to match your server route
+      const blob = await response.blob();
+
+      // Create a blob URL and open it in a new window/tab
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
+    });
+  }
+
   //   async function readImage() {
   //     const response = await getBase64(NablLogo);
   //     const pdfData = await response.arrayBuffer();
   //     return pdfData;
   //     // image = await pdfDoc.embedPng(imageBytes);
   //   }
-  const { width, height } = 0.5;
 
   async function handlePdf() {
     const pdfDoc = await PDFDocument.create();
@@ -352,7 +371,7 @@ const NewPoc = () => {
             >
               Add PT Record
             </button>
-            <button onClick={handlePdf}>Download Pdf</button>
+            <button>Download Pdf</button>
           </div>
           <div className="sm:hidden lg:block lg:grid lg:col-span-2 border border-black ml-4 p-4 w-[630px] h-[891px] rounded-md shadow-2xl flex flex-col flex-1 relative bg-white overflow-clip">
             <div className="header flex justify-center relative">

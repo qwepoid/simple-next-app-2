@@ -7,5 +7,6 @@ export const apiRoutes = {
     getDashboardData: getUrl('/api/getDashboardData'),
     signup: getUrl('/users/signup'),
     signin: getUrl('/users/signin'),
-    getPtRecords: getUrl('/pt/getRecords')
+    getPtRecords: getUrl('/pt/getRecords'),
+    createQuotationPdf: getUrl('/pdf/createQuotation')
 }

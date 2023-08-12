@@ -58,6 +58,40 @@ const Home: NextPage = () => {
       });
   }
 
+  async function downloadReport() {
+    fetch("http://localhost:5000/create-pdf", {
+      method: "POST",
+    }).then(async () => {
+      const response = await fetch("http://localhost:5000/fetch-pdf"); // Adjust the URL to match your server route
+      const blob = await response.blob();
+
+      // Create a blob URL and open it in a new window/tab
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
+    });
+    // .then(() => fetch("/fetch-pdf").then((res) => res))
+    // .then((blob) => {
+    //   console.log("blob: ", blob);
+    //   const pdfBlob = new Blob([blob], { type: "application/pdf" });
+    //   console.log("pdfBlob: ", pdfBlob);
+    //   // new Blob([res?.data], { type: "application/pdf" });
+    //   downloadFile(pdfBlob, "myfile.pdf");
+    // });
+  }
+
+  const downloadFile = (blob, fileName) => {
+    const link = document.createElement("a");
+    // create a blobURI pointing to our Blob
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    // some browser needs the anchor to be in the doc
+    document.body.append(link);
+    link.click();
+    link.remove();
+    // in case the Blob uses a lot of memory
+    setTimeout(() => URL.revokeObjectURL(link.href), 7000);
+  };
+
   return (
     <div>
       <main className="sm:flex-col md:flex lg:flex-row gap-4 items-center">
@@ -66,6 +100,7 @@ const Home: NextPage = () => {
         <WorkCard handleClick={undefined} />
         <PtIlcCard handleClick={() => router.push("pt-ilc")} />
         <PaymentsCard handleClick={() => router.push("payments")} />
+        <button onClick={downloadReport}>Click me</button>
       </main>
 
       <footer className={styles.footer}>
