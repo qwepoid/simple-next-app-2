@@ -1,44 +1,48 @@
-const TableData = () => {
-  return Array(30)
-    .fill()
+const TableData = (items) => {
+  return items
     .map(
-      (_, i) => `
-    <tr>
-    <td style="border: 1px solid #000; 
-       width: 1rem; 
-       font-size: 0.6rem;
-       line-height: 1rem; 
-       ">${i + 1}</td>
-    <td style="border: 1px solid #000; 
-       font-size: 0.6rem;
-       line-height: 1rem; 
-       max-width: 200px;">
-       This includes the finest quality of Standard Penetration Test (SPT), along with mobilization and site labour.
-    </td>
-    <td style="border: 1px solid #000; 
-       width: 2rem; 
-       font-size: 0.6rem;
-       line-height: 1rem; ">12</td>
-    <td style="border: 1px solid #000; 
-       font-size: 0.6rem;
-       line-height: 1rem; 
-       max-width: 250px;">
-       Boreholes
-    </td>
-    <td style="border: 1px solid #000; 
-       font-size: 0.6rem;
-       line-height: 1rem; 
-       max-width: 250px">
-       $ 20,000
-    </td>
-    <td style="border: 1px solid #000; 
-       font-size: 0.6rem;
-       line-height: 1rem; 
-       max-width: 250px">
-       $ 1,20,000
-    </td>
- </tr>
-`
+      (item, idx) => `
+         <tr>
+            <td style="border: 1px solid #000; 
+               width: 1rem; 
+               font-size: 0.6rem;
+               line-height: 1rem; 
+               ">${idx + 1}</td>
+            <td style="border: 1px solid #000; 
+               font-size: 0.6rem;
+               line-height: 1rem; 
+               max-width: 200px;
+               ">
+               ${item.testDescription}
+            </td>
+            <td style="border: 1px solid #000; 
+               width: 2rem; 
+               font-size: 0.6rem;
+               line-height: 1rem; ">${item.quantity}</td>
+            <td style="border: 1px solid #000; 
+               font-size: 0.6rem;
+               line-height: 1rem; 
+               max-width: 250px;">
+               ${item.unit}
+            </td>
+            <td style="border: 1px solid #000; 
+               font-size: 0.6rem;
+               line-height: 1rem; 
+               max-width: 250px">
+               ₹${item.rate.toLocaleString("en-IN")}
+            </td>
+            <td style="border: 1px solid #000; 
+               font-size: 0.6rem;
+               line-height: 1rem; 
+               max-width: 250px">
+               ₹${
+                 (Number(item.quantity) * Number(item.rate)).toLocaleString(
+                   "en-IN"
+                 ) || Number(item.rate).toLocaleString("en-IN")
+               }
+            </td>
+         </tr>
+      `
     )
     .join("");
 };

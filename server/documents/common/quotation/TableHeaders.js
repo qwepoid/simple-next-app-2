@@ -3,7 +3,7 @@ const TableHeaders = `
         <th style="
             border: 1px solid #000;
             font-size: 0.6rem;
-            line-height: 1rem; ">
+            line-height: 1rem;">
             S.No.
         </th>
         <th style="border: 1px solid #000; 

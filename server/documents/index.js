@@ -2,6 +2,7 @@ import {
   Header,
   QuotationTableData,
   QuotationTableHeader,
+  TaxesAndTotals,
   Reference,
   Subject,
 } from "./common/index.js";
@@ -12,8 +13,9 @@ const pdfTemplate = ({
   subject = "",
   dateOfQuotation = new Date(),
   reference = "",
+  quotationItems,
 }) => {
-  const showHeader = false;
+  const showHeader = true;
   const formattedDate = formatDate(dateOfQuotation);
   return `
   <!doctype html>
@@ -25,13 +27,8 @@ const pdfTemplate = ({
      <body>
        ${showHeader ? Header : ""}
         <div style="max-width: 800px;
-           display: flex;
-           flex-direction: column;
-           justify-content: center
            margin-top: 0px;
            padding: 10px;
-           border: 1px solid #eee;
-           box-shadow: 0 0 10px rgba(0, 0, 0, .15);
            font-size: 16px;
            line-height: 24px;
            font-family: 'Helvetica Neue', 'Helvetica';
@@ -50,12 +47,11 @@ const pdfTemplate = ({
               </div>
               <div>
                  <span style="display: block; 
-                    font-size: 0.875rem;
-                    line-height: 1.25rem;">To</span>
+                    font-size: 0.6rem;
+                    line-height: 1rem;">To</span>
                  <span style="display: block; 
-                    font-size: 0.75rem;
-                    line-height: 1rem; 
-                    line-height: 1rem; 
+                    font-size: 0.6rem;
+                    line-height: 1rem;
                     white-space: pre-line;
                     max-width: 150px">
                  ${quotationTo}
@@ -68,12 +64,13 @@ const pdfTemplate = ({
                  ">
                  QUOTATION
               </div>
-              ${Subject({ subject })}              
+              ${Subject({ subject })}
               ${Reference({ reference })}
               <table style="width: 100%;
-                 text-align: center; gap:0;">
+                 text-align: center;">
                   ${QuotationTableHeader}
-                  ${QuotationTableData()}
+                  ${QuotationTableData(quotationItems)}
+                  ${TaxesAndTotals(quotationItems)}
               </table>
            </div>
         </div>

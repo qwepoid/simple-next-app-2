@@ -4,3 +4,4 @@ export { default as Subject } from "./Subject.js";
 export { default as QuotationTableHeader } from "./quotation/TableHeaders.js";
 export { default as QuotationTableData } from "./quotation/TableData.js";
 export { default as BankDetails } from "./BankDetails.js";
+export { default as TaxesAndTotals } from "./quotation/TaxesAndTotals.js";
