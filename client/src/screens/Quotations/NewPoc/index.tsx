@@ -1,59 +1,28 @@
 import { useFormik } from "formik";
 import { useState } from "react";
 import { FormikErrors } from "./types";
+import { formikValidator, initialValues } from "./formikUtils";
+import useAddNewQuotation from "../custom-hooks/useAddNewQuotation";
 
 const NewPoc = () => {
+  const { data, addNewQuotation, isLoading, error } = useAddNewQuotation();
   const formik = useFormik({
-    initialValues: {
-      quotationTo: "",
-      subject: "",
-      reference: "",
-      quotationItems: [
-        { testDescription: "", quantity: "", unit: "", rate: "" },
-      ],
-      dateOfQuotation: "",
-    },
-    validate: (values): FormikErrors => {
-      let errors = { quotationItems: [] } as any;
-      if (!values.quotationTo) {
-        errors.quotationTo = "This is a required field";
-      }
-
-      if (!values.subject) {
-        errors.subject = "This is a required field";
-      }
-      if (!values.dateOfQuotation) {
-        errors.dateOfQuotation = "This is a required field";
-      }
-      if (!errors.quotationItems) errors.quotationItems = [];
-      values.quotationItems.forEach((item, index) => {
-        const itemError = {} as any;
-        if (!item.quantity) itemError.quantity = "This is a required field";
-
-        if (!item.rate) itemError.rate = "This is a required field";
-
-        if (!item.testDescription)
-          itemError.testDescription = "This is a required field";
-        if (!item.unit) itemError.unit = "This is a required field";
-
-        if (Object.keys(itemError).length > 0)
-          errors.quotationItems[index] = itemError;
-      });
-      return Object.keys(errors.quotationItems).length > 0 ? errors : {};
-    },
+    initialValues: initialValues,
+    validate: (values): FormikErrors => formikValidator(values),
     onSubmit: (values) => {
-      const payload = JSON.stringify(values);
+      // const payload = JSON.stringify(values);
       alert(JSON.stringify(values, null, 2));
-      downloadPdf(payload);
+      addNewQuotation(values);
+      // downloadPdf();
     },
   });
 
   const [dataUrl, setDataUrl] = useState("");
 
-  async function downloadPdf(payload) {
+  async function downloadPdf() {
     fetch("http://localhost:5000/pdf/createQuotation", {
       method: "POST",
-      body: payload,
+      body: JSON.stringify(formik.values),
       headers: {
         "Content-Type": "application/json",
       },
@@ -291,12 +260,13 @@ const NewPoc = () => {
                 Add Item
               </button>
             </div>
-            <button>Add PT Record</button>
-            <button type="submit">Preview Pdf</button>
+            <button type="submit">Add PT Record</button>
+            <button onClick={downloadPdf}>Preview Pdf</button>
           </div>
           {/* // Preview starts here */}
-          <div className="sm:hidden lg:block lg:grid lg:col-span-2 border border-black ml-4  w-[630px] h-[891px] rounded-md shadow-2xl flex flex-col flex-1 relative bg-white overflow-clip">
-            {!!dataUrl && (
+
+          {!!dataUrl ? (
+            <div className="sm:hidden lg:block lg:grid lg:col-span-2 border border-black ml-4  w-[630px] h-[891px] rounded-md shadow-2xl flex flex-col flex-1 overflow-clip">
               <object
                 data={dataUrl}
                 type="application/pdf"
@@ -309,8 +279,15 @@ const NewPoc = () => {
                   <a href={dataUrl}>to the PDF!</a>
                 </p>
               </object>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div
+              className="sm:hidden lg:flex col-span-2 flex justify-center items-center text-7xl text-slate-300 cursor-pointer text-center place-self-center w-96 hover:scale-105"
+              onClick={downloadPdf}
+            >
+              Click to see Preview
+            </div>
+          )}
         </div>
       </form>
     </div>

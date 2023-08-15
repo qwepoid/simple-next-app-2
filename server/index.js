@@ -27,11 +27,14 @@ import {
 } from "./controllers/task.js";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import dotenv from "dotenv";
-import userRouter from "./routes/userRouter.js";
+import {
+  userRouter,
+  ptRouter,
+  pdfRouter,
+  equipmentsRouter,
+  quotationRouter,
+} from "./routes/index.js";
 import mongoose from "mongoose";
-import ptRouter from "./routes/ptRouter.js";
-import pdfRouter from "./routes/pdfRouter.js";
-import equipmentsRouter from "./routes/equipmentsRouter.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -148,6 +151,8 @@ app.use("/pdf", pdfRouter);
 app.use("/users", userRouter);
 
 app.use("/equipments", equipmentsRouter);
+
+app.use("/quotation", quotationRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the project");
