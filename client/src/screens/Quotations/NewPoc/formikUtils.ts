@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export const formikValidator = (values) => {
     let errors = { quotationItems: [] } as any;
     if (!values.quotationTo) {
@@ -28,11 +30,12 @@ export const formikValidator = (values) => {
 }
 
 export const initialValues = {
+    title: '',
     quotationTo: "",
     subject: "",
     reference: "",
     quotationItems: [
       { testDescription: "", quantity: "", unit: "", rate: "" },
     ],
-    dateOfQuotation: "",
+    dateOfQuotation: dayjs(new Date()).format('YYYY-MM-DD'),
   }

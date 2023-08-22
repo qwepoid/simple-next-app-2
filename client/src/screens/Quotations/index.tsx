@@ -1,11 +1,14 @@
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import useGetQuotations from "./custom-hooks/useGetQuotations";
 import dayjs from "dayjs";
+import QuotationSearch from "./QuotationSearch";
 
 const Quotations: React.FC = () => {
   const router = useRouter();
+  const [searchString, setSearchString] = useState("");
+
   async function handlePdf() {
     const pdfDoc = await PDFDocument.create();
 
@@ -37,22 +40,44 @@ const Quotations: React.FC = () => {
     downloadLink.download = "example.pdf";
     downloadLink.click();
   }
-  const { data, isLoading, error } = useGetQuotations();
+
+  const { data, isLoading, error, getQuotations } = useGetQuotations();
+
+  const [onScreenQuotations, setOnScreenQuotations] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setOnScreenQuotations(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    getQuotations({ searchString });
+  }, [searchString]);
+
   return (
     <div>
       <div className="flex justify-between">
         <h1>My Quotations</h1>
         <button
-          className="mt-16"
+          className="mt-16 bg-red-500 border border-red-500 rounded-lg p-1 px-2 text-white hover:scale-105"
           onClick={() => router.push("/quotations/addNew")}
         >
-          Create new Quotation
+          + New
         </button>
-        {/* <Typography variant="h4">My Quotations</Typography> */}
+      </div>
+      <div>
+        <QuotationSearch
+          handleSearch={(searchQuery) => setSearchString(searchQuery)}
+          currentQuery={searchString}
+        />
       </div>
       <div className="flex flex-col gap-2">
-        {data?.map((datum) => (
-          <div className="flex rounded-md p-2 shadow-2xl border border-blue-100 bg-gradient-to-br from-blue-100 hover:from-blue-200 cursor-pointer">
+        {onScreenQuotations?.map((datum) => (
+          <div
+            className="flex rounded-md p-2  border border-blue-100 hover:bg-slate-50 cursor-pointer"
+            onClick={() => router.push(`/quotations/${datum._id}`)}
+          >
             <div className="left flex-grow flex flex-col">
               <div>Client: {datum.quotationTo}</div>
               <div>

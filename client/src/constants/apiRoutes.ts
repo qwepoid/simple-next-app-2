@@ -12,5 +12,7 @@ export const apiRoutes = {
     /** Quotations */
     getQuotations: getUrl('/quotation'),
     createQuotation: getUrl('/quotation/create'),
+    updateQuotation: getUrl('/quotation/update'),
+    deleteQuotation: getUrl('/quotation/delete'),
     createQuotationPdf: getUrl('/pdf/createQuotation')
 }

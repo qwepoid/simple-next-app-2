@@ -22,7 +22,7 @@ const SearchBar = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-fit">
       <input
         type="text"
         autoFocus={autofocus}

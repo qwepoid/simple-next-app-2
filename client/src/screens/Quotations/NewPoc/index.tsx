@@ -1,22 +1,62 @@
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormikErrors } from "./types";
 import { formikValidator, initialValues } from "./formikUtils";
 import useAddNewQuotation from "../custom-hooks/useAddNewQuotation";
+import { useRouter } from "next/router";
+import useGetQuotations from "../custom-hooks/useGetQuotations";
+import dayjs from "dayjs";
+import updateQuotation from "../../../services/quotation/updateQuotation";
 
 const NewPoc = () => {
+  const router = useRouter();
   const { data, addNewQuotation, isLoading, error } = useAddNewQuotation();
+  const {
+    getQuotations,
+    data: prefillData,
+    isLoading: isPrefillLoading,
+  } = useGetQuotations(1);
+  const { query, pathname } = useRouter();
+  const isNew = pathname.includes("addNew") || false;
+  const [isEditMode, setIsEditMode] = useState(isNew);
+
+  useEffect(() => {
+    if (query.id) {
+      getQuotations({ id: query.id.toString() });
+    }
+  }, [query]);
+
+  function onHandleCancel() {
+    formik.setValues(prefillData[0]);
+    setIsEditMode(false);
+  }
+
+  useEffect(() => {
+    if (!isEditMode && isNew && data.id) {
+      router.replace(data.id);
+    }
+  }, [isEditMode, isNew, data]);
+
+  useEffect(() => {
+    if (prefillData) formik.setValues(prefillData[0]);
+  }, [prefillData]);
+
   const formik = useFormik({
     initialValues: initialValues,
     validate: (values): FormikErrors => formikValidator(values),
     onSubmit: (values) => {
-      // const payload = JSON.stringify(values);
       alert(JSON.stringify(values, null, 2));
-      addNewQuotation(values);
-      // downloadPdf();
+      if (isEditMode && !isNew) {
+        Promise.resolve(updateQuotation(values)).then(() =>
+          setIsEditMode((old) => !old)
+        );
+      } else {
+        Promise.resolve(addNewQuotation(values)).then(() =>
+          setIsEditMode((old) => !old)
+        );
+      }
     },
   });
-
   const [dataUrl, setDataUrl] = useState("");
 
   async function downloadPdf() {
@@ -49,26 +89,86 @@ const NewPoc = () => {
       { testDescription: "", quantity: "", unit: "", rate: "" },
     ]);
   };
+
+  if (isPrefillLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="mt-4">
       <form onSubmit={formik.handleSubmit}>
         <div className="flex flex-col lg:grid lg:grid-cols-4">
           <div className="flex flex-col lg:grid lg:grid-cols-2 lg:col-span-2 gap-4">
-            <span className="mt-4 text-lg font-medium text-gray-500 list-item col-span-2">
+            <div className="flex col-span-2 justify-between">
+              {formik.values.title && (
+                <span className="text-stone-800 mr-2 text-2xl">Title:</span>
+              )}
+              {isEditMode ? (
+                <input
+                  id="title"
+                  onChange={formik.handleChange}
+                  value={formik.values.title}
+                  className="outline-none border-b-2 flex-1 mr-8 text-2xl text-stone-600 placeholder:font-light placeholder:text-2xl"
+                  placeholder="Title ( . . . for internal reference only)"
+                />
+              ) : (
+                <span className="flex-1 mr-8 text-2xl text-stone-600 placeholder:font-light placeholder:text-3xl">
+                  {formik.values.title}
+                </span>
+              )}
+              {!isNew && (
+                <div className="col-start-2 justify-self-end">
+                  <button
+                    className={`border border-black w-24 p-1 rounded-lg mr-4 hover:scale-105 ${
+                      isEditMode && "bg-green-500 border-green-500 text-white"
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (isEditMode) {
+                        formik.handleSubmit();
+                      } else {
+                        setIsEditMode(true);
+                      }
+                    }}
+                  >
+                    {isEditMode ? "Save" : "Edit"}
+                  </button>
+                  {isEditMode && (
+                    <button
+                      onClick={onHandleCancel}
+                      className="border border-black w-24 p-1 rounded-lg justify-self-end hover:scale-105"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+            <span className="text-lg font-medium text-gray-500 list-item col-span-2">
               Client Details
             </span>
             <div className="flex col-span-2 gap-2 justify-between">
               <div className="flex flex-col">
                 <div className="w-48 flex flex-col">
                   <label className="text-xs text-gray-400">To*</label>
-                  <textarea
-                    id="quotationTo"
-                    className="outline-none border-2 rounded-lg p-2 w-96 col-span-2"
-                    placeholder="eg. M/s Engg Research Labs"
-                    onChange={formik.handleChange}
-                    value={formik.values.quotationTo}
-                    wrap="soft"
-                  />
+                  {/* TODO: Try to remove textarea and move everything to span using
+                  contentEditable */}
+                  {isEditMode ? (
+                    <textarea
+                      id="quotationTo"
+                      className="outline-none border-2 rounded-lg p-2 w-96 col-span-2"
+                      placeholder="eg. M/s Engg Research Labs"
+                      onChange={formik.handleChange}
+                      value={formik.values.quotationTo}
+                      wrap="soft"
+                    />
+                  ) : (
+                    <span
+                      id="quotationTo"
+                      className="outline-none rounded-lg p-2 w-96 col-span-2"
+                    >
+                      {formik.values.quotationTo}
+                    </span>
+                  )}
                 </div>
                 <div>
                   {formik.touched.quotationTo && formik.errors.quotationTo ? (
@@ -83,14 +183,22 @@ const NewPoc = () => {
                   <label className="text-xs text-gray-400">
                     Date of Quotation*
                   </label>
-                  <input
-                    type="date"
-                    id="dateOfQuotation"
-                    className="outline-none border-2 rounded-lg p-2 col-span-2"
-                    placeholder=""
-                    onChange={formik.handleChange}
-                    value={formik.values.dateOfQuotation}
-                  />
+                  {isEditMode ? (
+                    <input
+                      type="date"
+                      id="dateOfQuotation"
+                      className="outline-none border-2 rounded-lg p-2 col-span-2"
+                      placeholder=""
+                      onChange={formik.handleChange}
+                      value={formik.values.dateOfQuotation}
+                    />
+                  ) : (
+                    <span className="outline-none rounded-lg p-2 col-span-2">
+                      {dayjs(formik.values.dateOfQuotation).format(
+                        "DD/MM/YYYY"
+                      )}
+                    </span>
+                  )}
                 </div>
                 <div>
                   {formik.touched.dateOfQuotation &&
@@ -105,13 +213,17 @@ const NewPoc = () => {
             <div className="flex flex-col">
               <div className="w-full col-span-2 flex flex-col">
                 <label className="text-xs text-gray-400">Subject*</label>
-                <input
-                  id="subject"
-                  className="outline-none border-2 rounded-lg p-2 col-span-2"
-                  placeholder=""
-                  onChange={formik.handleChange}
-                  value={formik.values.subject}
-                />
+                {isEditMode ? (
+                  <input
+                    id="subject"
+                    className="outline-none border-2 rounded-lg p-2 col-span-2"
+                    placeholder=""
+                    onChange={formik.handleChange}
+                    value={formik.values.subject}
+                  />
+                ) : (
+                  <span>{formik.values.subject}</span>
+                )}
               </div>
               <div>
                 {formik.touched.subject && formik.errors.subject ? (
@@ -123,13 +235,17 @@ const NewPoc = () => {
             </div>
             <div className="w-full col-span-2 flex flex-col">
               <label className="text-xs text-gray-400">Reference</label>
-              <input
-                id="reference"
-                className="outline-none border-2 rounded-lg p-2 col-span-2"
-                placeholder="eg. Phone call on July 10, 2023"
-                onChange={formik.handleChange}
-                value={formik.values.reference}
-              />
+              {isEditMode ? (
+                <input
+                  id="reference"
+                  className="outline-none border-2 rounded-lg p-2 col-span-2"
+                  placeholder="eg. Phone call on July 10, 2023"
+                  onChange={formik.handleChange}
+                  value={formik.values.reference}
+                />
+              ) : (
+                <span>{formik.values.reference}</span>
+              )}
             </div>
 
             <span className="mt-4 text-lg font-medium text-gray-500 list-item col-span-2">
@@ -148,15 +264,22 @@ const NewPoc = () => {
                     >
                       Test Desctiption*:
                     </label>
-                    <textarea
-                      className="outline-none border-2 rounded-lg p-2 w-full col-span-2 text-sm h-40"
-                      id={`quotationItems.${index}.testDescription`}
-                      name={`quotationItems.${index}.testDescription`}
-                      onChange={formik.handleChange}
-                      value={
-                        formik.values.quotationItems[index].testDescription
-                      }
-                    />
+                    {isEditMode ? (
+                      <textarea
+                        className="outline-none border-2 rounded-lg p-2 w-full col-span-2 text-sm h-40"
+                        id={`quotationItems.${index}.testDescription`}
+                        name={`quotationItems.${index}.testDescription`}
+                        onChange={formik.handleChange}
+                        value={
+                          formik.values.quotationItems[index].testDescription
+                        }
+                      />
+                    ) : (
+                      <span className="outline-none rounded-lg p-2 w-full col-span-2 text-sm">
+                        {formik.values.quotationItems[index].testDescription}
+                      </span>
+                    )}
+
                     <div>
                       {formik.touched.quotationItems?.[index]
                         ?.testDescription &&
@@ -175,14 +298,21 @@ const NewPoc = () => {
                       >
                         Quantity*
                       </label>
-                      <input
-                        className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
-                        id={`quotationItems.${index}.quantity`}
-                        name={`quotationItems.${index}.quantity`}
-                        type="number"
-                        onChange={formik.handleChange}
-                        value={formik.values.quotationItems[index].quantity}
-                      />
+                      {isEditMode ? (
+                        <input
+                          className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
+                          id={`quotationItems.${index}.quantity`}
+                          name={`quotationItems.${index}.quantity`}
+                          type="number"
+                          onChange={formik.handleChange}
+                          value={formik.values.quotationItems[index].quantity}
+                        />
+                      ) : (
+                        <span>
+                          {formik.values.quotationItems[index].quantity}
+                        </span>
+                      )}
+
                       <div>
                         {formik.touched.quotationItems?.[index]?.quantity &&
                         formik.errors.quotationItems?.[index]?.quantity ? (
@@ -199,14 +329,19 @@ const NewPoc = () => {
                       >
                         Unit*
                       </label>
-                      <input
-                        className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
-                        id={`quotationItems.${index}.unit`}
-                        name={`quotationItems.${index}.unit`}
-                        type="text"
-                        onChange={formik.handleChange}
-                        value={formik.values.quotationItems[index].unit}
-                      />
+                      {isEditMode ? (
+                        <input
+                          className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
+                          id={`quotationItems.${index}.unit`}
+                          name={`quotationItems.${index}.unit`}
+                          type="text"
+                          onChange={formik.handleChange}
+                          value={formik.values.quotationItems[index].unit}
+                        />
+                      ) : (
+                        <span>{formik.values.quotationItems[index].unit}</span>
+                      )}
+
                       <div>
                         {formik.touched.quotationItems?.[index]?.unit &&
                         formik.errors.quotationItems?.[index]?.unit ? (
@@ -223,14 +358,19 @@ const NewPoc = () => {
                       >
                         Rate*
                       </label>
-                      <input
-                        className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
-                        id={`quotationItems.${index}.rate`}
-                        name={`quotationItems.${index}.rate`}
-                        type="number"
-                        onChange={formik.handleChange}
-                        value={formik.values.quotationItems[index].rate}
-                      />
+                      {isEditMode ? (
+                        <input
+                          className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
+                          id={`quotationItems.${index}.rate`}
+                          name={`quotationItems.${index}.rate`}
+                          type="number"
+                          onChange={formik.handleChange}
+                          value={formik.values.quotationItems[index].rate}
+                        />
+                      ) : (
+                        <span>{formik.values.quotationItems[index].rate}</span>
+                      )}
+
                       <div>
                         {formik.touched.quotationItems?.[index]?.rate &&
                         formik.errors.quotationItems?.[index]?.rate ? (
