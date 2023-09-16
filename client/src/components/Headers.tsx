@@ -38,6 +38,12 @@ const Headers = () => {
           >
             Quotations{" "}
           </button>
+          <button
+            className={btnStyle}
+            onClick={() => router.push("/service-request")}
+          >
+            Service Requests
+          </button>
           <button className={btnStyle} onClick={() => router.push("/job")}>
             Jobs{" "}
           </button>
