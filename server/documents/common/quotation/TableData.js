@@ -8,12 +8,16 @@ const TableData = (items) => {
                font-size: 0.6rem;
                line-height: 1rem; 
                ">${idx + 1}</td>
-            <td style="border: 1px solid #000; 
-               font-size: 0.6rem;
-               line-height: 1rem; 
-               max-width: 200px;
+            <td style="border: 1px solid #000;
+               max-width: 200px;     
                ">
+               <span style="white-space: pre-line;
+               margin-top: -20px;
+               display:block;
+               font-size: 0.6rem;
+               line-height: 1rem; ">
                ${item.testDescription}
+               </span>
             </td>
             <td style="border: 1px solid #000; 
                width: 2rem; 

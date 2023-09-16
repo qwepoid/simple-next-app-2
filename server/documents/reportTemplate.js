@@ -9,7 +9,7 @@ import {
 import { formatDate } from "./common/utils.js";
 
 const pdfTemplate = ({
-  quotationTo = "",
+  reportTo = "",
   subject = "",
   dateOfQuotation = new Date(),
   reference = "",
@@ -53,10 +53,8 @@ const pdfTemplate = ({
                     font-size: 0.6rem;
                     line-height: 1rem;
                     white-space: pre-line;
-                    max-width: 150px;
-                    margin-top: -16px;
-                    margin-left: 20px;">
-                 ${quotationTo}
+                    max-width: 150px">
+                 ${reportTo}
                  </span>
               </div>
               <div style="text-align: center; 
@@ -64,10 +62,8 @@ const pdfTemplate = ({
                  font-size: 0.8rem;
                  text-decoration: underline; 
                  ">
-                 QUOTATION
+                 TEST REPORT
               </div>
-              ${Subject({ subject })}
-              ${Reference({ reference })}
               <table style="width: 100%;
                  text-align: center;">
                   ${QuotationTableHeader}

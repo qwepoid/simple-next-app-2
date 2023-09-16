@@ -1,7 +1,5 @@
 import { useState } from "react";
-import createQuotation from "../../../services/quotation/createQuotation";
-import updateQuotationService from "../../../services/quotation/updateQuotation";
-import deleteQuotationService from "../../../services/quotation/deleteQuotation";
+import { createQuotationService, updateQuotationService, deleteQuotationService } from "../../../services/quotation";
 
 const useAddNewQuotation = () => {
 
@@ -12,7 +10,7 @@ const useAddNewQuotation = () => {
     async function addNewQuotation(payload) {
         setIsLoading(true);
         try {
-            const response = await createQuotation(payload)
+            const response = await createQuotationService(payload)
             setData(response)
         } catch (err) {
             setError(err);
