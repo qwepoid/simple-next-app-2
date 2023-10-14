@@ -8,7 +8,7 @@ const Headers = () => {
   const btnStyle =
     "p-2 hover:underline underline-offset-8 font-semibold text-gray-700";
   return (
-    <div className="pb-12 hidden md:grid grid-cols-12 gap-3 fixed w-full bg-gradient-to-b from-yellow-300">
+    <div className="hidden md:grid grid-cols-12 gap-3 w-full bg-gradient-to-b from-yellow-300">
       {isAuthenticated ? (
         <>
           <button className={btnStyle} onClick={() => router.push("/")}>
@@ -38,8 +38,11 @@ const Headers = () => {
           >
             Quotations{" "}
           </button>
-          <button className={btnStyle} onClick={() => router.push("/job")}>
-            Jobs{" "}
+          <button
+            className={btnStyle}
+            onClick={() => router.push("/service-request")}
+          >
+            Service Requests
           </button>
           <div
             className="col-start-12 flex items-center cursor-pointer"

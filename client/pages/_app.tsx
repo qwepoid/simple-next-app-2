@@ -41,7 +41,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <SafeHydrate>
         <AppProviders>
           <Headers />
-          <div className="md:mx-24 py-16 h-screen">
+          <div className="md:mx-24 pb-16 h-full">
             <Component {...pageProps} />
           </div>
         </AppProviders>
