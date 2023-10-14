@@ -12,7 +12,6 @@ import {
 } from "./controllers/equipments.js";
 import {
   addJob,
-  getJobs,
   deleteJob,
   updateJob,
   getJobDetails,
@@ -28,6 +27,8 @@ import {
 import { MongoClient, ServerApiVersion } from "mongodb";
 import dotenv from "dotenv";
 import {
+  jobRouter,
+  serviceRequestRouter
   userRouter,
   ptRouter,
   pdfRouter,
@@ -149,6 +150,8 @@ app.use("/pt", ptRouter);
 app.use("/pdf", pdfRouter);
 
 app.use("/users", userRouter);
+app.use("/job", jobRouter);
+app.use("/sr", serviceRequestRouter);
 
 app.use("/equipments", equipmentsRouter);
 
@@ -184,10 +187,10 @@ app.post("/api/updateEquipment", updateEquipment);
 app.get("/api/deleteEquipment", deleteEquipment);
 
 // Jobs
-app.get("/api/getJobs", getJobs);
+// app.get("/api/getJobs", getJobs);
 app.get("/api/getJobDetails", getJobDetails);
 app.post("/api/addJob", addJob);
 app.post("/api/updateJob", updateJob);
 app.get("/api/deleteJob", deleteJob);
 
-app.listen(5000, () => console.log("Server is running on port 5000"));
+app.listen(5001, () => console.log("Server is running on port 5001"));
