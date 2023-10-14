@@ -2,60 +2,68 @@ import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { formikValidator, initialValues } from "./formikUtils";
 import { FormikErrors } from "./types";
-import { useState } from "react";
-import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import useServiceRequests from "./custom-hooks/useServiceRequests";
+import ClientDetailsSection from "./components/ClientDetailsSections";
+import ClientRepSection from "./components/ClientRepSections";
+import SampleDetailsSections from "./components/SampleDetailsSections";
+import useGetServiceRequests from "./custom-hooks/useGetServiceRequests";
+import { JobStatus } from "../Jobs/JobDetails/types";
 
 const NewServiceRequest = () => {
   const router = useRouter();
-  const handleJobOrderCreation = () => {
-    router.push("/job/new");
-  };
-
-  const handleJobOrderCancellation = () => {
-    router.push("/");
-  };
 
   const { query, pathname } = useRouter();
-  const isNew = pathname.includes("addNew") || false;
-  const [isEditMode, setIsEditMode] = useState(true);
+  const isNew = pathname.includes("new") || false;
+  const [isEditMode, setIsEditMode] = useState(isNew);
 
-  const addItem = () => {
-    formik.setFieldValue("sampleDetails", [
-      ...formik.values.sampleDetails,
-      {
-        sampleDescription: "",
-        samplingLocation: "",
-        testPatameters: [],
-        testMethod: "",
-        quantity: "",
-        packingDetails: "",
-      },
-    ]);
-  };
+  const { createServiceRequest, data, isLoading, error } = useServiceRequests();
 
-  const removeItem = (index) => {
-    const updatedSampleDetails = [...formik.values.sampleDetails];
-    updatedSampleDetails.splice(index, 1);
-    formik.setFieldValue("sampleDetails", updatedSampleDetails);
-  };
+  useEffect(() => {
+    if (!isEditMode && isNew && data?.id) {
+      router.replace(data.id);
+    }
+  }, [isEditMode, isNew, data]);
+
+  useEffect(() => {
+    if (query.id) {
+      getServiceRequests({ id: query.id.toString() });
+    }
+  }, [query]);
 
   const formik = useFormik({
     initialValues: initialValues,
-    // validate: (values): FormikErrors => formikValidator(values),
+    validate: (values): FormikErrors => formikValidator(values),
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
-      // if (isEditMode && !isNew) {
-      //   Promise.resolve(updateQuotation(values)).then(() =>
-      //     setIsEditMode((old) => !old)
-      //   );
-      // } else {
-      //   Promise.resolve(addNewQuotation(values)).then(() =>
-      //     setIsEditMode((old) => !old)
-      //   );
-      // }
+      if (isEditMode && !isNew) {
+        // TODO: Write update function
+        // Promise.resolve(updateQuotation(values)).then(() =>
+        //   setIsEditMode((old) => !old)
+        // );
+      } else {
+        Promise.resolve(createServiceRequest(values)).then(() =>
+          setIsEditMode((old) => !old)
+        );
+      }
     },
   });
 
+  function onHandleCancel() {
+    formik.setValues(prefillData[0]);
+    setIsEditMode(false);
+  }
+
+  const {
+    getServiceRequests,
+    data: prefillData,
+    isLoading: isPrefillLoading,
+  } = useGetServiceRequests();
+
+  useEffect(() => {
+    if (prefillData) formik.setValues(prefillData[0]);
+  }, [prefillData]);
+  console.log("prefill: ", prefillData);
+  let k = -1;
   return (
     <div className="mt-4">
       <form onSubmit={formik.handleSubmit}>
@@ -97,7 +105,7 @@ const NewServiceRequest = () => {
                   </button>
                   {isEditMode && (
                     <button
-                      // onClick={onHandleCancel}
+                      onClick={onHandleCancel}
                       className="border border-black w-24 p-1 rounded-lg justify-self-end hover:scale-105"
                     >
                       Cancel
@@ -106,394 +114,45 @@ const NewServiceRequest = () => {
                 </div>
               )}
             </div>
-            <span className="text-lg font-medium text-gray-500 list-item col-span-2">
-              Client Details
-            </span>
-            <div className="flex col-span-2 gap-2 justify-between">
-              <div className="flex flex-col">
-                <div className="w-48 flex flex-col">
-                  <label className="text-xs text-gray-400">
-                    Customer Name & Address*
-                  </label>
-                  {/* TODO: Try to remove textarea and move everything to span using
-                  contentEditable */}
-                  {isEditMode ? (
-                    <textarea
-                      id={`customerDetails.customerNameAddress`}
-                      className="outline-none border-2 rounded-lg p-2 w-96 col-span-2"
-                      placeholder="eg. M/s Engg Research Labs"
-                      onChange={formik.handleChange}
-                      value={formik.values.customerDetails?.customerNameAddress}
-                      wrap="soft"
-                    />
-                  ) : (
-                    <span
-                      id="customerNameAddress"
-                      className="outline-none rounded-lg p-2 w-96 col-span-2"
-                    >
-                      {formik.values.customerDetails?.customerNameAddress}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  {formik.touched.customerDetails?.customerNameAddress &&
-                  formik.errors.customerDetails?.customerNameAddress ? (
-                    <div className="text-xs text-red-500 font-semibold">
-                      {formik.errors.customerDetails?.customerNameAddress}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
+            <ClientDetailsSection isEditMode={isEditMode} formik={formik} />
 
-              <div className="flex flex-col">
-                <div className="w-48 flex flex-col">
-                  <label className="text-xs text-gray-400">Date of SR*</label>
-                  {isEditMode ? (
-                    <input
-                      type="date"
-                      id="dateOfSR"
-                      className="outline-none border-2 rounded-lg p-2 col-span-2"
-                      placeholder=""
-                      onChange={formik.handleChange}
-                      value={formik.values.dateOfSR}
-                    />
-                  ) : (
-                    <span className="outline-none rounded-lg p-2 col-span-2">
-                      {dayjs(formik.values.dateOfSR).format("DD/MM/YYYY")}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  {formik.touched.dateOfSR && formik.errors.dateOfSR ? (
-                    <div className="text-xs text-red-500 font-semibold">
-                      {formik.errors.dateOfSR}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
+            <ClientRepSection isEditMode={isEditMode} formik={formik} />
 
-            <span className="text-lg font-medium text-gray-500 list-item col-span-2">
-              Customer Representative Details
-            </span>
-            <div className="flex col-span-2 gap-2 justify-between">
-              <div className="flex flex-col">
-                <div className="w-48 flex flex-col">
-                  <label className="text-xs text-gray-400">
-                    Representative Name*
-                  </label>
-                  {/* TODO: Try to remove textarea and move everything to span using
-                  contentEditable */}
-                  {isEditMode ? (
-                    <input
-                      id={`customerDetails.customerRepName`}
-                      className="outline-none border-2 rounded-lg p-2 col-span-2"
-                      placeholder="eg. Naresh Gupta"
-                      onChange={formik.handleChange}
-                      value={formik.values.customerDetails?.customerRepName}
-                      wrap="soft"
-                    />
-                  ) : (
-                    <span
-                      id="quotationTo"
-                      className="outline-none rounded-lg p-2 w-96 col-span-2"
-                    >
-                      {formik.values.customerDetails?.customerRepName}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  {formik.touched.customerDetails?.customerRepName &&
-                  formik.errors.customerDetails?.customerRepName ? (
-                    <div className="text-xs text-red-500 font-semibold">
-                      {formik.errors.customerDetails?.customerRepName}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="w-48 flex flex-col">
-                  <label className="text-xs text-gray-400">
-                    Representative Phone No. *
-                  </label>
-                  {/* TODO: Try to remove textarea and move everything to span using
-                  contentEditable */}
-                  {isEditMode ? (
-                    <input
-                      id={`customerDetails.customerRepPhone`}
-                      className="outline-none border-2 rounded-lg p-2 col-span-2"
-                      placeholder="9XXXXXXXXX"
-                      onChange={formik.handleChange}
-                      value={formik.values.customerDetails?.customerRepPhone}
-                      wrap="soft"
-                    />
-                  ) : (
-                    <span
-                      id="quotationTo"
-                      className="outline-none rounded-lg p-2 w-96 col-span-2"
-                    >
-                      {formik.values.customerDetails?.customerRepPhone}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  {formik.touched.customerDetails?.customerRepPhone &&
-                  formik.errors.customerDetails?.customerRepPhone ? (
-                    <div className="text-xs text-red-500 font-semibold">
-                      {formik.errors.customerDetails?.customerRepPhone}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
+            <SampleDetailsSections isEditMode={isEditMode} formik={formik} />
 
-            <span className="mt-4 text-lg font-medium text-gray-500 list-item col-span-2">
-              Sample Details
-            </span>
-            <div className="w-full flex flex-col lg:col-span-2">
-              {formik.values.sampleDetails.map((_, index) => (
-                <div key={index} className="mt-4">
-                  <div className="font-medium bg-slate-200">
-                    Item {index + 1}:
-                  </div>
-                  <div className="flex lg:col-span-2 gap-2 justify-between">
-                    <div className="flex flex-col">
-                      <label
-                        htmlFor={`sampleDetails.${index}.sampleDescription`}
-                        className="text-xs text-gray-400"
-                      >
-                        Sample Desctiption*:
-                      </label>
-                      {isEditMode ? (
-                        <input
-                          className="
-                        outline-none border-2 rounded-lg p-2  text-sm"
-                          id={`sampleDetails.${index}.sampleDescription`}
-                          name={`sampleDetails.${index}.sampleDescription`}
-                          onChange={formik.handleChange}
-                          value={
-                            formik.values.sampleDetails[index].sampleDescription
-                          }
-                        />
-                      ) : (
-                        <span className="outline-none rounded-lg p-2 text-sm">
-                          {formik.values.sampleDetails[index].sampleDescription}
-                        </span>
-                      )}
-
-                      <div>
-                        {formik.touched.sampleDetails?.[index]
-                          ?.sampleDescription &&
-                        formik.errors.sampleDetails?.[index]
-                          ?.sampleDescription ? (
-                          <div className="text-xs text-red-500 font-semibold">
-                            {
-                              formik.errors.sampleDetails[index]
-                                ?.sampleDescription
-                            }
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className="w-40 flex flex-col">
-                      <label
-                        htmlFor={`sampleDetails.${index}.quantity`}
-                        className="text-xs text-gray-400"
-                      >
-                        Quantity*
-                      </label>
-                      {isEditMode ? (
-                        <input
-                          className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
-                          id={`sampleDetails.${index}.quantity`}
-                          name={`sampleDetails.${index}.quantity`}
-                          onChange={formik.handleChange}
-                          value={formik.values.sampleDetails[index].quantity}
-                        />
-                      ) : (
-                        <span>
-                          {formik.values.sampleDetails[index].quantity}
-                        </span>
-                      )}
-
-                      <div>
-                        {formik.touched.sampleDetails?.[index]?.quantity &&
-                        formik.errors.sampleDetails?.[index]?.quantity ? (
-                          <div className="text-xs text-red-500 font-semibold">
-                            {formik.errors.sampleDetails?.[index]?.quantity}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className="w-40 flex flex-col">
-                      <label
-                        htmlFor={`sampleDetails.${index}.samplingLocation`}
-                        className="text-xs text-gray-400"
-                      >
-                        samplingLocation*
-                      </label>
-                      {isEditMode ? (
-                        <input
-                          className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
-                          id={`sampleDetails.${index}.samplingLocation`}
-                          name={`sampleDetails.${index}.samplingLocation`}
-                          type="text"
-                          onChange={formik.handleChange}
-                          value={
-                            formik.values.sampleDetails[index].samplingLocation
-                          }
-                        />
-                      ) : (
-                        <span>
-                          {formik.values.sampleDetails[index].samplingLocation}
-                        </span>
-                      )}
-
-                      <div>
-                        {formik.touched.sampleDetails?.[index]
-                          ?.samplingLocation &&
-                        formik.errors.sampleDetails?.[index]
-                          ?.samplingLocation ? (
-                          <div className="text-xs text-red-500 font-semibold">
-                            {
-                              formik.errors.sampleDetails?.[index]
-                                ?.samplingLocation
-                            }
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex lg:col-span-2 gap-2 justify-between">
-                    <div className="w-full flex flex-col">
-                      <label
-                        htmlFor={`sampleDetails.${index}.testMethod`}
-                        className="text-xs text-gray-400"
-                      >
-                        testMethods*
-                      </label>
-                      {isEditMode ? (
-                        <div>
-                          <textarea
-                            className="outline-none border-2 rounded-lg p-2 w-full col-span-2"
-                            id={`sampleDetails.${index}.testMethod`}
-                            name={`sampleDetails.${index}.testMethod`}
-                            onChange={formik.handleChange}
-                            value={
-                              formik.values.sampleDetails[index].testMethod
-                            }
-                          />
-                          <span className="w-full text-xs text-green-700">
-                            Add comma separated values
-                          </span>
-                        </div>
-                      ) : (
-                        <span>
-                          {formik.values.sampleDetails[index].testMethod}
-                        </span>
-                      )}
-
-                      <div>
-                        {formik.touched.sampleDetails?.[index]?.testMethod &&
-                        formik.errors.sampleDetails?.[index]?.testMethod ? (
-                          <div className="text-xs text-red-500 font-semibold">
-                            {formik.errors.sampleDetails?.[index]?.testMethod}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeItem(index)}
-                    className={`mt-2 font-medium rounded-lg bg-red-400 text-white px-2 ${
-                      !index && "hidden"
-                    }`}
-                  >
-                    Remove Item
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={addItem}
-                className="w-fit mt-8 p-1 text-white bg-blue-400 rounded-lg"
-              >
-                Add New Sample Type
-              </button>
-            </div>
             <button type="submit">Generate Service Request</button>
-            {/* <button onClick={downloadPdf}>Preview Pdf</button> */}
           </div>
-          {/* // Preview starts here */}
+          {/* Right Side */}
 
-          {/* {!!dataUrl ? (
-            <div className="sm:hidden lg:block lg:grid lg:col-span-2 border border-black ml-4  w-[630px] h-[891px] rounded-md shadow-2xl flex flex-col flex-1 overflow-clip">
-              <object
-                data={dataUrl}
-                type="application/pdf"
-                width="100%"
-                height="100%"
-                className="hidden lg:block"
-              >
-                <p>
-                  Alternative text - include a link{" "}
-                  <a href={dataUrl}>to the PDF!</a>
-                </p>
-              </object>
-            </div>
-          ) : (
-            <div
-              className="sm:hidden lg:flex col-span-2 flex justify-center items-center text-7xl text-slate-300 cursor-pointer text-center place-self-center w-96 hover:scale-105"
-              onClick={downloadPdf}
-            >
-              Click to see Preview
-            </div>
-          )} */}
+          <div className="sm:hidden lg:block lg:grid lg:col-span-2 ml-4 flex flex-col mt-12 justify-end">
+            {!isNew && (
+              <div className="flex flex-col gap-4">
+                <span className="text-lg font-medium text-gray-500 list-item col-span-2">
+                  Jobs
+                </span>
+                {prefillData?.[0]?.sampleDetails?.map((sample, idx) => {
+                  return sample.testParameters.map((parameter, pIdx) => {
+                    k++;
+                    return (
+                      <a href={`/job/${prefillData?.[0].jobIds[k].id}`}>
+                        <span className="h-fit">
+                          <span className="mr-2">SR1J2:</span>
+                          <span className="text-blue-500 underline">
+                            {`${sample.sampleDescription}: ${parameter.parameter} Test`}
+                          </span>
+                          <span>
+                            [{JobStatus[prefillData?.[0].jobIds[k].status]}]
+                          </span>
+                        </span>
+                      </a>
+                    );
+                  });
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </form>
-    </div>
-  );
-
-  return (
-    <div>
-      <div>
-        <label htmlFor="client">Client</label>
-        <input name="client" className="border mx-2" />
-      </div>
-      <div>
-        <label htmlFor="sampleDescription">Sample Description</label>
-        <input name="sampleDescription" className="border mx-2" />
-      </div>
-      <div>
-        <label htmlFor="samplingLocation">Sampling Location</label>
-        <input name="samplingLocation" className="border mx-2" />
-      </div>
-      <div>
-        <label htmlFor="testParameters">Test Parameters</label>
-        <select name="testParameters" className="border mx-2" multiple>
-          <option>Acidity</option>
-          <option>Alkalinity</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="sampleQuantity">Sample Quantity</label>
-        <input name="sampleQuantity" className="border mx-2" />
-      </div>
-      <div className="fixed bottom-20 flex w-full justify-around">
-        <button
-          onClick={handleJobOrderCreation}
-          className="bg-blue-800 rounded-lg p-2 font-medium text-white"
-        >
-          Create Job Order
-        </button>
-        <button
-          onClick={handleJobOrderCancellation}
-          className="p-2 font-medium underline"
-        >
-          Save for later
-        </button>
-      </div>
     </div>
   );
 };

@@ -1,61 +1,71 @@
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
+import useGetServiceRequests from "./custom-hooks/useGetServiceRequests";
+import { useEffect, useState } from "react";
 
 const ServiceRequest = () => {
   const router = useRouter();
 
-  const handleNewServiceRequest = () => {
-    router.push("/service-request/new");
-  };
+  const [searchString, setSearchString] = useState("");
+  const [onScreenSRs, setOnScreenSRs] = useState([]);
+  const { data, isLoading, error, getServiceRequests } =
+    useGetServiceRequests(1);
+
+  useEffect(() => {
+    if (data) {
+      setOnScreenSRs(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    getServiceRequests({ searchString });
+  }, [searchString]);
+
   return (
     <div>
       <div className="flex justify-between">
-        <h1>My Quotations</h1>
+        <h1>Service Requests</h1>
         <button
           className="mt-16 bg-red-500 border border-red-500 rounded-lg p-1 px-2 text-white hover:scale-105"
-          onClick={() => router.push("/quotations/addNew")}
+          onClick={() => router.push("/service-request/new")}
         >
           + New
         </button>
       </div>
-      {/* <div>
-        <QuotationSearch
-          handleSearch={(searchQuery) => setSearchString(searchQuery)}
-          currentQuery={searchString}
-        />
-      </div> */}
+
+      <div>
+        <div> New Added today:</div>
+      </div>
+      <div>Existing SRs</div>
       <div className="flex flex-col gap-2">
-        {Array(5)
-          .fill(null)
-          ?.map((datum) => (
+        {onScreenSRs?.map((datum) => {
+          const { srId, client, dateOfSR, progress } = datum;
+          const { notStarted, inProgress, completed } = progress;
+          return (
             <div
               className="flex rounded-md p-2  border border-blue-100 hover:bg-slate-50 cursor-pointer"
-              onClick={() => router.push(`/service-request/new`)}
+              onClick={() => router.push(`/service-request/${srId}`)}
             >
               <div className="left flex-grow flex flex-col">
-                <div>Client: {"qwdqwd"}</div>
                 <div>
-                  <span className="text-sm">Total </span>
-                  <span className="text-xs">(Incl. GST): </span>
-                  <span>250 crores</span>
+                  <span className="font-bold mr-2">Client:</span>
+                  {client}
+                </div>
+                <div className="flex gap-4">
+                  <span>{`Not Started: ${notStarted}`}</span>
+                  <span>{`In Progress: ${inProgress}`}</span>
+                  <span>{`Completed: ${completed}`}</span>
                 </div>
               </div>
               <div className="right min-w-[200px]">
-                Date of Quotation: {dayjs("11-11-2023").format("MMM DD, YYYY")}
+                <span className="font-bold mr-2">Date of Sample Receipt:</span>
+                {dayjs(dateOfSR).format("MMM DD, YYYY")}
               </div>
             </div>
-          ))}
+          );
+        })}
       </div>
     </div>
-  );
-  return <div>Hell oservice requests</div>;
-  return (
-    <button
-      onClick={handleNewServiceRequest}
-      className="bg-red-500 fixed right-6 bottom-20 text-white rounded-full w-fit px-4 py-2 text-xl md:hidden"
-    >
-      +
-    </button>
   );
 };
 
