@@ -16,4 +16,11 @@ export const apiRoutes = {
   signup: getUrl("/users/signup"),
   signin: getUrl("/users/signin"),
   getPtRecords: getUrl("/pt/getRecords"),
+
+  /** Quotations */
+  getQuotations: getUrl('/quotation'),
+  createQuotation: getUrl('/quotation/create'),
+  updateQuotation: getUrl('/quotation/update'),
+  deleteQuotation: getUrl('/quotation/delete'),
+  createQuotationPdf: getUrl('/pdf/createQuotation')
 };
