@@ -283,9 +283,15 @@ const NewPoc = () => {
                     <div>
                       {formik.touched.quotationItems?.[index]
                         ?.testDescription &&
-                      formik.errors.quotationItems?.[index]?.testDescription ? (
+                      formik.errors.quotationItems?.[index][
+                        "testDescription"
+                      ] ? (
                         <div className="text-xs text-red-500 font-semibold">
-                          {formik.errors.quotationItems[index]?.testDescription}
+                          {
+                            formik.errors.quotationItems[index][
+                              "testDescription"
+                            ]
+                          }
                         </div>
                       ) : null}
                     </div>
@@ -315,9 +321,9 @@ const NewPoc = () => {
 
                       <div>
                         {formik.touched.quotationItems?.[index]?.quantity &&
-                        formik.errors.quotationItems?.[index]?.quantity ? (
+                        formik.errors.quotationItems?.[index]["quantity"] ? (
                           <div className="text-xs text-red-500 font-semibold">
-                            {formik.errors.quotationItems?.[index]?.quantity}
+                            {formik.errors.quotationItems?.[index]["quantity"]}
                           </div>
                         ) : null}
                       </div>
@@ -344,9 +350,9 @@ const NewPoc = () => {
 
                       <div>
                         {formik.touched.quotationItems?.[index]?.unit &&
-                        formik.errors.quotationItems?.[index]?.unit ? (
+                        formik.errors.quotationItems?.[index]["unit"] ? (
                           <div className="text-xs text-red-500 font-semibold">
-                            {formik.errors.quotationItems?.[index]?.unit}
+                            {formik.errors.quotationItems?.[index]["unit"]}
                           </div>
                         ) : null}
                       </div>
@@ -373,9 +379,9 @@ const NewPoc = () => {
 
                       <div>
                         {formik.touched.quotationItems?.[index]?.rate &&
-                        formik.errors.quotationItems?.[index]?.rate ? (
+                        formik.errors.quotationItems?.[index]["rate"] ? (
                           <div className="text-xs text-red-500 font-semibold">
-                            {formik.errors.quotationItems?.[index]?.rate}
+                            {formik.errors.quotationItems?.[index]["rate"]}
                           </div>
                         ) : null}
                       </div>
