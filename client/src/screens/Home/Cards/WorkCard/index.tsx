@@ -1,4 +1,4 @@
-const WorkCard = ({ handleClick }) => {
+const WorkCard = ({ handleClick, data }) => {
   return (
     <div
       className="border border-black rounded-xl flex flex-col p-2 cursor-pointer w-64"
@@ -10,15 +10,15 @@ const WorkCard = ({ handleClick }) => {
       <div className="flex flex-col">
         <div className="flex justify-between">
           <span>Not started</span>
-          <span>12</span>
+          <span>{data?.notStarted}</span>
         </div>
         <div className="flex justify-between">
           <span>Ongoing</span>
-          <span>7</span>
+          <span>{data?.inProgress}</span>
         </div>
         <div className="flex justify-between">
           <span>Completed</span>
-          <span>39</span>
+          <span>{data?.onHold}</span>
         </div>
       </div>
     </div>
