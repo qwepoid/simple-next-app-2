@@ -42,6 +42,26 @@ export const getDashboardData = async (req, res) => {
   const COLLECTION = process.env.MONGO_COLLECTION;
   const DB = process.env.MONGO_DB;
 
+  const JOB_COLLECTION = "job";
+  const notStartedQuery = { status: { $in: [0, "0"] } };
+  const inProgressQuery = { status: { $in: [1, "1"] } };
+  const onHoldQuery = { status: { $in: [2, "2"] } };
+
+  const notStartedCount = await client
+    .db(DB)
+    .collection(JOB_COLLECTION)
+    .countDocuments(notStartedQuery);
+
+  const inProgressCount = await client
+    .db(DB)
+    .collection(JOB_COLLECTION)
+    .countDocuments(inProgressQuery);
+
+  const onHoldCount = await client
+    .db(DB)
+    .collection(JOB_COLLECTION)
+    .countDocuments(onHoldQuery);
+
   const pipeline = getPipeline();
   const pipeline30 = getPipeline(30);
   const pipeline60 = getPipeline(60);
@@ -67,6 +87,11 @@ export const getDashboardData = async (req, res) => {
         expired: expiredData.length,
         expiring30: expiringData30.length,
         expiring60: expiringData60.length,
+      },
+      works: {
+        notStarted: notStartedCount,
+        inProgress: inProgressCount,
+        onHold: onHoldCount,
       },
     })
   );

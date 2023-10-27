@@ -97,7 +97,10 @@ const Home: NextPage = () => {
       <main className="sm:flex-col md:flex lg:flex-row gap-4 items-center">
         {/* <input type="file" id="fileInput" onChange={handleChange} /> */}
         <CalibrationCard data={dashboardData?.calibrations} />
-        <WorkCard handleClick={undefined} />
+        <WorkCard
+          data={dashboardData?.works}
+          handleClick={() => router.push("service-request")}
+        />
         <PtIlcCard handleClick={() => router.push("pt-ilc")} />
         <PaymentsCard handleClick={() => router.push("payments")} />
         <button onClick={downloadReport}>Click me</button>
