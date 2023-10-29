@@ -19,7 +19,7 @@ export const createQuotation = async (req, res) => {
       })
       .toFile("./tmp/quotation.pdf", (err) => {
         if (err) {
-          console.log("error", err);
+          console.log("error writing to /tmp/quotation.pdf", err);
           res.send(Promise.reject());
           reject(1);
         }
