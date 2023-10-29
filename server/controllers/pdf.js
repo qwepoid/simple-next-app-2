@@ -18,7 +18,7 @@ export const createQuotation = async (req, res) => {
       })
       .toFile("quotation.pdf", (err) => {
         if (err) {
-          console.log("error");
+          console.log("error", err);
           res.send(Promise.reject());
           reject(1);
         }
