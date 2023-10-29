@@ -20,9 +20,12 @@ export const createQuotation = async (req, res) => {
         if (err) {
           console.log("error");
           res.send(Promise.reject());
+          reject(1);
         }
         console.log("success");
         resolve(1);
       });
-  }).then(() => res.sendFile(`quotation.pdf`, { root: "." }));
+  })
+    .then(() => res.sendFile(`quotation.pdf`, { root: "." }))
+    .catch((err) => res.send(err));
 };
