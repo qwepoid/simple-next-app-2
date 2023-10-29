@@ -16,6 +16,7 @@ export const createQuotation = async (req, res) => {
             last: '<div style="display: flex; position: absolute; bottom: 32; padding: 1rem; align-items: center; width: 100%; font-size: 0.75rem;line-height: 1.25rem; background-color: #ffffff; ">For Engg. Research Labs</div>', // fallback value
           },
         },
+        phantomPath: "./node_modules/phantomjs-prebuilt/bin/phantomjs",
       })
       .toFile("./tmp/quotation.pdf", (err) => {
         if (err) {
