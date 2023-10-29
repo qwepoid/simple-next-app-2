@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import useGetQuotations from "../custom-hooks/useGetQuotations";
 import dayjs from "dayjs";
 import updateQuotation from "../../../services/quotation/updateQuotation";
+import { apiRoutes } from "../../../constants/apiRoutes";
 
 const NewPoc = () => {
   const router = useRouter();
@@ -60,22 +61,20 @@ const NewPoc = () => {
   const [dataUrl, setDataUrl] = useState("");
 
   async function downloadPdf() {
-    fetch("http://localhost:5000/pdf/createQuotation", {
+    const response = await fetch(apiRoutes.createQuotationPdf, {
       method: "POST",
       body: JSON.stringify(formik.values),
       headers: {
         "Content-Type": "application/json",
       },
-    }).then(async () => {
-      const response = await fetch("http://localhost:5000/pdf/getQuotation"); // Adjust the URL to match your server route
-      const blob = await response.blob();
-
-      // Create a blob URL
-      const blobUrl = URL.createObjectURL(blob);
-      setDataUrl(blobUrl);
-      // To open in a new window
-      // window.open(blobUrl, "_blank");
     });
+    const blob = await response.blob();
+
+    // Create a blob URL
+    const blobUrl = URL.createObjectURL(blob);
+    setDataUrl(blobUrl);
+    // To open in a new window
+    // window.open(blobUrl, "_blank");
   }
 
   const removeItem = (index) => {
