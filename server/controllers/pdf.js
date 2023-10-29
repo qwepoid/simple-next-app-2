@@ -6,6 +6,7 @@ export const createQuotation = async (req, res) => {
   new Promise((resolve, reject) => {
     pdf
       .create(pdfTemplate(req.body), {
+        directory: "/tmp",
         header: {
           height: "68mm",
         },
@@ -16,7 +17,7 @@ export const createQuotation = async (req, res) => {
           },
         },
       })
-      .toFile("quotation.pdf", (err) => {
+      .toFile("./tmp/quotation.pdf", (err) => {
         if (err) {
           console.log("error", err);
           res.send(Promise.reject());
@@ -25,5 +26,5 @@ export const createQuotation = async (req, res) => {
         console.log("success");
         resolve(1);
       });
-  }).then(() => res.sendFile(`quotation.pdf`, { root: "." }));
+  }).then(() => res.sendFile(`quotation.pdf`, { root: "./tmp" }));
 };
