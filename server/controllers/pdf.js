@@ -3,7 +3,7 @@ import pdf from "html-pdf";
 
 export const createQuotation = async (req, res) => {
   console.log("req.body: ", req.body);
-  new Promise((resolve, _) => {
+  new Promise((resolve, reject) => {
     pdf
       .create(pdfTemplate(req.body), {
         header: {
@@ -25,7 +25,5 @@ export const createQuotation = async (req, res) => {
         console.log("success");
         resolve(1);
       });
-  })
-    .then(() => res.sendFile(`quotation.pdf`, { root: "." }))
-    .catch((err) => res.send(err));
+  }).then(() => res.sendFile(`quotation.pdf`, { root: "." }));
 };
