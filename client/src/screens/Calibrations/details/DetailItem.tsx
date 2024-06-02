@@ -7,22 +7,24 @@ const DetailItem = ({
   isEditMode = false,
   isEditable = false,
   isDate = false,
+  onChange,
 }) => {
   const [dateValue, setDateValue] = useState(
-    dayjs(new Date()).format("YYYY-MM-DD")
+    isDate && value ? dayjs(value).format("YYYY-MM-DD") : ""
   );
 
   useEffect(() => {
-    if (isDate) {
-      let [date, month, year] = value.split("-");
-      let newValue = `${year}-${month}-${date}`;
-      setDateValue(newValue);
-    }
+    if (!isDate || !value) return;
+    setDateValue(value);
   }, [isDate, value]);
 
   function handleDateChange(e) {
-    console.log(e.target.value);
     setDateValue(e.target.value);
+    onChange(e.target.value);
+  }
+
+  function handleSpanChange(e) {
+    onChange(e.currentTarget?.textContent);
   }
   return (
     <div
@@ -34,7 +36,8 @@ const DetailItem = ({
       {isDate ? (
         <input
           type="date"
-          value={dateValue}
+          name=""
+          value={dayjs(dateValue).format("YYYY-MM-DD")}
           onChange={handleDateChange}
           disabled={!isEditMode}
         />
@@ -44,6 +47,7 @@ const DetailItem = ({
           className={`capitalize ${
             isEditable && isEditMode ? "border rounded-lg p-1" : "px-4 py-1"
           }`}
+          onInput={handleSpanChange}
         >
           {value}
         </span>

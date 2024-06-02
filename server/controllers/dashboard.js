@@ -9,12 +9,7 @@ function getPipeline(days = 0) {
       $cond: {
         if: { $eq: ["$calibrationTo", ""] },
         then: null, // or any default value you prefer
-        else: {
-          $dateFromString: {
-            dateString: "$calibrationTo",
-            format: "%d-%m-%Y",
-          },
-        },
+        else: "$calibrationTo",
       },
     },
   };
@@ -61,7 +56,6 @@ export const getDashboardData = async (req, res) => {
     .db(DB)
     .collection(JOB_COLLECTION)
     .countDocuments(onHoldQuery);
-
   const pipeline = getPipeline();
   const pipeline30 = getPipeline(30);
   const pipeline60 = getPipeline(60);

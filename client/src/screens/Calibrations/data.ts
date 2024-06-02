@@ -1,12 +1,14 @@
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
 export const getExpiringSoonClassName = (calibDueDate: string) => {
   const today = new Date();
-  let diffDays = 0;
+  dayjs.extend(customParseFormat);
+
   if (calibDueDate.length) {
-    const [day, month, year] = calibDueDate.split("-");
-    // JavaScript months are zero-based, so we subtract 1 from the month value
-    const parsedDate = new Date(Number(year), Number(month) - 1, Number(day));
-    const diff = (parsedDate?.getTime() || 0) - today.getTime();
-    diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+    const receivedDate = dayjs(calibDueDate, "DD-MM-YYYY");
+    const diffDays = receivedDate.diff(dayjs(today), "day");
+
     if (diffDays <= 60) {
       return "bg-red-500";
     }

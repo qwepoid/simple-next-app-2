@@ -4,22 +4,41 @@ import DetailItem from "./DetailItem";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../../../../firebaseConfig";
 import useGetEquipmentDetails from "../service-hooks/useGetEquipmentDetails";
+import useCalibrationItemCrud from "../service-hooks/useCalibrationItemCrud";
 
 const CalibrationDetails = () => {
   const router = useRouter();
   const { id } = router.query;
   console.log("page Id is: ", id);
   const [isEditMode, setEditMode] = useState(false);
+  const [currentData, setCurrentData] = useState(null);
 
   function getButtonName() {
     return isEditMode ? "Save" : "Update";
   }
 
+  const { updateCalibrationItemDetails } = useCalibrationItemCrud();
+
   const { equipmentData } = useGetEquipmentDetails({ equipmentId: id });
+
+  function handleFormValueChange(key, newValue) {
+    const updated = currentData;
+    updated[key] = newValue;
+    setCurrentData(updated);
+    console.log("updated: ", updated);
+  }
+
+  useEffect(() => {
+    console.log("currentData: ", currentData);
+  }, [currentData]);
+
+  useEffect(() => {
+    setCurrentData(equipmentData);
+  }, [equipmentData]);
 
   function handleEditData() {
     if (isEditMode) {
-      // save data
+      updateCalibrationItemDetails(currentData);
     }
     setEditMode((isEditMode) => !isEditMode);
   }
@@ -40,39 +59,77 @@ const CalibrationDetails = () => {
   return (
     <div className="h-screen">
       <div className="border-b-2 border-b-black pb-2 flex justify-between mb-8">
-        <span className="text-xl font-bold ">{equipmentData.equipName}</span>
+        <span className="text-xl font-bold ">{currentData?.equipName}</span>
       </div>
       <div className="w-1/2 float-left pr-2">
         <DetailItem
+          isEditable
           isEditMode={isEditMode}
           title="Equipment Name"
-          value={equipmentData.equipName.toLowerCase()}
+          value={currentData?.equipName.toLowerCase()}
+          onChange={(value) => handleFormValueChange("equipName", value)}
         />
         <DetailItem
           isEditable
           isEditMode={isEditMode}
           title="ULR No"
-          value={equipmentData.ulr || "---"}
+          value={currentData?.ulr || "---"}
+          onChange={(value) => handleFormValueChange("ulr", value)}
+        />
+        <DetailItem
+          isEditable
+          isEditMode={isEditMode}
+          title="Serial"
+          value={currentData?.serial || "---"}
+          onChange={(value) => handleFormValueChange("serial", value)}
+        />
+        <DetailItem
+          isEditable
+          isEditMode={isEditMode}
+          title="Make / Model"
+          value={currentData?.makeModel || "---"}
+          onChange={(value) => handleFormValueChange("makeModel", value)}
         />
         <DetailItem
           isEditable
           isDate
           isEditMode={isEditMode}
           title="Last Calibrated on"
-          value={equipmentData.calibrationFrom}
+          value={currentData?.calibrationFrom}
+          onChange={(value) =>
+            handleFormValueChange("calibrationFrom", new Date(value))
+          }
         />
         <DetailItem
           isEditable
           isDate
           isEditMode={isEditMode}
           title="Expiring on"
-          value={equipmentData.calibrationTo}
+          value={currentData?.calibrationTo}
+          onChange={(value) =>
+            handleFormValueChange("calibrationTo", new Date(value))
+          }
         />
         <DetailItem
           isEditable
           isEditMode={isEditMode}
           title="Calibrated by"
-          value={equipmentData.calibrationBy.toLowerCase()}
+          value={currentData?.calibrationBy.toLowerCase()}
+          onChange={(value) => handleFormValueChange("calibrationBy", value)}
+        />
+        <DetailItem
+          isEditable
+          isEditMode={isEditMode}
+          title="Range"
+          value={currentData?.range}
+          onChange={(value) => handleFormValueChange("range", value)}
+        />
+        <DetailItem
+          isEditable
+          isEditMode={isEditMode}
+          title="Least Count"
+          value={currentData?.accuracy}
+          onChange={(value) => handleFormValueChange("accuracy", value)}
         />
         {isEditMode && (
           <button className="flex border w-full justify-center rounded-lg px-2 py-1 text-white bg-blue-500 my-2">

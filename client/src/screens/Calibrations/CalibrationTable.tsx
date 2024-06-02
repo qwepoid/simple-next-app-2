@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { getExpiringSoonClassName } from "./data";
+import { formatDateForTable } from "./utils";
 
 const CalibrationTable = ({ columns, rows }) => {
   const router = useRouter();
@@ -39,13 +40,15 @@ const CalibrationTable = ({ columns, rows }) => {
                 </td>
                 <td className="border p-2">{el?.section}</td>
                 <td className="border p-2">{el?.url || "TC91400000002015"}</td>
-                <td className="border p-2">{el?.calibrationFrom}</td>
+                <td className="border p-2">
+                  {formatDateForTable(el?.calibrationFrom)}
+                </td>
                 <td
                   className={`border p-2 ${getExpiringSoonClassName(
-                    el?.calibrationTo
+                    formatDateForTable(el?.calibrationTo)
                   )}`}
                 >
-                  {el?.calibrationTo}
+                  {formatDateForTable(el?.calibrationTo)}
                 </td>
                 <td className="border p-2 max-w-[60px] text-ellipsis overflow-hidden">
                   {el?.calibrationBy}

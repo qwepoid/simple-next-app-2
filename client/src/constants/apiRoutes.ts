@@ -4,6 +4,8 @@ function getUrl(url): string {
 
 export const apiRoutes = {
   getEquipments: getUrl("/api/getEquipments"),
+  updateEquipment: getUrl("/equipments/update"),
+
   /** Service Request */
   getServiceRequests: getUrl("/sr"),
   createServiceRequest: getUrl("/sr/createServiceRequest"),
@@ -18,9 +20,9 @@ export const apiRoutes = {
   getPtRecords: getUrl("/pt/getRecords"),
 
   /** Quotations */
-  getQuotations: getUrl('/quotation'),
-  createQuotation: getUrl('/quotation/create'),
-  updateQuotation: getUrl('/quotation/update'),
-  deleteQuotation: getUrl('/quotation/delete'),
-  createQuotationPdf: getUrl('/pdf/createQuotation')
+  getQuotations: getUrl("/quotation"),
+  createQuotation: getUrl("/quotation/create"),
+  updateQuotation: getUrl("/quotation/update"),
+  deleteQuotation: getUrl("/quotation/delete"),
+  createQuotationPdf: getUrl("/pdf/createQuotation"),
 };
