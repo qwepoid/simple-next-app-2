@@ -9,7 +9,8 @@ import {
   updateEquipment,
   deleteEquipment,
   getEquipmentsWithExpiry,
-} from "./controllers/equipments.js";
+  updateDateFields,
+} from "./controllers/equipments/index.js";
 import {
   addJob,
   deleteJob,
@@ -167,6 +168,8 @@ app.get("/test", (req, res) => {
 
 // Dashboard
 app.get("/api/getDashboardData", getDashboardData);
+// app.get("/api/updateDatesOne", updateDateFieldsOne);
+app.get("/api/updateDates", updateDateFields);
 
 // Tests
 app.get("/api/getTests", getTests);
