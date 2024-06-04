@@ -1,5 +1,6 @@
 export const applicationRoutes = {
-    calibrations: '/calibrations',
-    login: '/login',
-    home: '/'
-}
+  home: "/",
+  scope: "/scope",
+  calibrations: "/calibrations",
+  login: "/login",
+};
