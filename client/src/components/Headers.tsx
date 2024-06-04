@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useContext } from "react";
 import AuthContext from "../context/auth-context/AuthContext";
+import { applicationRoutes } from "../constants/applicationRoutes";
 
 const Headers = () => {
   const router = useRouter();
@@ -13,6 +14,12 @@ const Headers = () => {
         <>
           <button className={btnStyle} onClick={() => router.push("/")}>
             Home
+          </button>
+          <button
+            className={btnStyle}
+            onClick={() => router.push(applicationRoutes.scope)}
+          >
+            Scope
           </button>
           <button className={btnStyle} onClick={() => router.push("/payments")}>
             Payments
