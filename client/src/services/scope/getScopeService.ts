@@ -1,10 +1,15 @@
-const getScopeService = async (searchString = "") => {
+const getScopeService = async (
+  searchString = "",
+  discipline = "",
+  group = "",
+  material = ""
+) => {
   let finalUrl;
-  if (searchString) {
-    finalUrl = `${process.env.NEXT_PUBLIC_BASE_API_URL}/scope/getScope?q=${searchString}`;
-  } else {
-    finalUrl = `${process.env.NEXT_PUBLIC_BASE_API_URL}/scope/getScope`;
-  }
+  finalUrl = `${
+    process.env.NEXT_PUBLIC_BASE_API_URL
+  }/scope/getScope?search=${searchString}&discipline=${discipline}&group=${encodeURIComponent(
+    group
+  )}&material=${material}`;
   const data = await fetch(finalUrl).then((res) => res.json());
   return data;
 };

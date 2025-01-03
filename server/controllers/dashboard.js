@@ -9,12 +9,7 @@ function getPipeline(days = 0) {
       $cond: {
         if: { $eq: ["$calibrationTo", ""] },
         then: null, // or any default value you prefer
-        else: {
-          $dateFromString: {
-            dateString: "$calibrationTo",
-            format: "%d-%m-%Y",
-          },
-        },
+        else: "$calibrationTo",
       },
     },
   };

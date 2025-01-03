@@ -4,11 +4,65 @@ import { columns } from "./constants";
 import { downloadCurrentScreenData } from "../Calibrations/utils";
 import useGetScopeData from "./service-hooks/useGetScopeData";
 import ScopeTable from "./ScopeTable";
+import DisciplineFilter from "./Filters/DisciplineFilter";
+import GroupFilter from "./Filters/GroupFilter";
+import MaterialFilter from "./Filters/MaterialFilter";
 
 export default function StylingRowsGrid() {
   const [onScreenScope, setOnScreenScope] = useState([]);
   const [searchString, setSearchString] = useState("");
-  const { scopeData } = useGetScopeData({ searchString });
+  const [filters, setFilters] = useState({
+    discipline: "",
+    group: "",
+    material: "",
+  });
+
+  const { scopeData, getScopeData } = useGetScopeData({
+    searchString: searchString,
+    discipline: filters.discipline,
+    group: filters.group,
+    material: filters.material,
+  });
+
+  console.log("filters: ", filters);
+
+  function handleDisciplineChange(newDiscipline) {
+    const newFilters = {
+      discipline: newDiscipline,
+      group: "",
+      material: "",
+    };
+    setFilters(newFilters);
+    getScopeData({
+      searchString: searchString,
+      ...newFilters,
+    });
+  }
+
+  function handleGroupChange(newGroup) {
+    const newFilters = {
+      ...filters,
+      group: newGroup,
+      material: "",
+    };
+    setFilters(newFilters);
+    getScopeData({
+      searchString,
+      ...newFilters,
+    });
+  }
+
+  function handleMaterialChange(newMaterial) {
+    const newFilters = {
+      ...filters,
+      material: newMaterial,
+    };
+    setFilters(newFilters);
+    getScopeData({
+      searchString,
+      ...newFilters,
+    });
+  }
 
   useEffect(() => {
     if (scopeData) {
@@ -18,6 +72,12 @@ export default function StylingRowsGrid() {
 
   function handleSearch(searchQuery) {
     setSearchString(searchQuery);
+    getScopeData({
+      discipline: filters?.discipline,
+      group: filters?.group,
+      material: filters?.material,
+      searchString: searchQuery,
+    });
   }
 
   return (
@@ -33,6 +93,18 @@ export default function StylingRowsGrid() {
         >
           Download Screen Data
         </button>
+      </div>
+      <div className="flex">
+        <DisciplineFilter onDisciplineChange={handleDisciplineChange} />
+        <GroupFilter
+          discipline={filters.discipline}
+          onGroupChange={handleGroupChange}
+        />
+        <MaterialFilter
+          discipline={filters.discipline}
+          group={filters.group}
+          onMaterialChange={handleMaterialChange}
+        />
       </div>
       <ScopeTable columns={columns} rows={onScreenScope} />
     </div>
