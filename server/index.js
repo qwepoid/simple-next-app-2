@@ -31,7 +31,7 @@ import {
   serviceRequestRouter,
   userRouter,
   ptRouter,
-  // pdfRouter,
+  pdfRouter,
   equipmentsRouter,
   quotationRouter,
   scopeRouter,
@@ -52,23 +52,23 @@ export const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
-// async function run() {
-//   try {
-//     // Connect the client to the server	(optional starting in v4.7)
-//     await client.connect();
-//     // Send a ping to confirm a successful connection
-//     await client.db("skdb").command({ ping: 1 });
-//     console.log(
-//       "Pinged your deployment. You successfully connected to MongoDB!"
-//     );
-//     //   console.log(client.db('admin').collection('skdb').aggregate())
-//     // const data = await client.db("skdb").collection("inst").find({}).toArray();
-//     // console.log("!!: ", data);
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     //   await client.close();
-//   }
-// }
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("skdb").command({ ping: 1 });
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
+    //   console.log(client.db('admin').collection('skdb').aggregate())
+    // const data = await client.db("skdb").collection("inst").find({}).toArray();
+    // console.log("!!: ", data);
+  } finally {
+    // Ensures that the client will close when you finish/error
+    //   await client.close();
+  }
+}
 // run();
 
 mongoose
@@ -149,7 +149,7 @@ app.get("/nabl-logo", (req, res) => {
 app.use("/pt", ptRouter);
 app.use("/scope", scopeRouter);
 
-// app.use("/pdf", pdfRouter);
+app.use("/pdf", pdfRouter);
 
 app.use("/users", userRouter);
 app.use("/job", jobRouter);
@@ -196,5 +196,3 @@ app.post("/api/updateJob", updateJob);
 app.get("/api/deleteJob", deleteJob);
 
 app.listen(5001, () => console.log("Server is running on port 5001"));
-
-export default app;
