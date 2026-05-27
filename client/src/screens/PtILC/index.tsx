@@ -3,6 +3,7 @@ import RecordsPT from "./RecordsPT";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import useGetPtRecords from "./service-hooks/useGetPtRecords";
+import PtPlan from "./PtPlan";
 
 const PtILC = () => {
   const [currentSelection, setCurrentSelection] = useState(0);
@@ -14,7 +15,7 @@ const PtILC = () => {
     router.push("pt-ilc/new");
   }
 
-  const { data, isLoading, error } = useGetPtRecords();
+  // const { data, isLoading, error } = useGetPtRecords();
   return (
     <div>
       <div className="grid grid-cols-10">
@@ -51,10 +52,10 @@ const PtILC = () => {
               Add new Record
             </button>
           </div>
-
+          <PtPlan />
           <AwaitedPT />
           <br />
-          <RecordsPT addNewEntry={addNewEntry} records={data} />
+          {/* <RecordsPT addNewEntry={addNewEntry} records={data} /> */}
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ const BottomNav = () => {
       </button>
       <button onClick={() => router.push("/job")}>&#128188;</button>
       <button onClick={() => router.push("/service-request")}>SR</button>
+      <button onClick={() => router.push("/workflow")}>WF</button>
       <button className="text-4xl">☰</button>
     </div>
   );

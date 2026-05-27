@@ -106,6 +106,25 @@ const Home: NextPage = () => {
         <button onClick={downloadReport}>Click me</button>
       </main>
 
+      {/* Time section here */}
+      <section className={styles.timeline}>
+        <h2>Timeline</h2>
+        <ul>
+          {[
+            { month: "January", task: "Task for January" },
+            { month: "February", task: "Task for February" },
+            { month: "March", task: "Task for March" },
+          ].map((item, index) => (
+            <li key={index}>
+              <label>
+                <input type="checkbox" />
+                <strong>{item.month}:</strong> {item.task}
+              </label>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <footer className={styles.footer}>
         <a
           href="https://enggresearchlabs.com"
