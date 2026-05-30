@@ -13,6 +13,8 @@ export const apiRoutes = {
   updateJob: getUrl("/job/update"),
 
   getDashboardData: getUrl("/api/getDashboardData"),
+  getSheetsDashboardData: getUrl("/sync/sheets"),
+  syncSheetsDashboardData: getUrl("/sync/sheets"),
   signup: getUrl("/users/signup"),
   signin: getUrl("/users/signin"),
   getPtRecords: getUrl("/pt/getRecords"),

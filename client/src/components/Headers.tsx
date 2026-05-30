@@ -17,37 +17,55 @@ const Headers = () => {
           </button>
           <button
             className={btnStyle}
+            onClick={() => router.push(applicationRoutes.owner)}
+          >
+            Owner dashboard
+          </button>
+          <button
+            className={btnStyle}
             onClick={() => router.push(applicationRoutes.scope)}
           >
             Scope
           </button>
-          <button className={btnStyle} onClick={() => router.push("/payments")}>
+          <button
+            className={btnStyle}
+            onClick={() => router.push(applicationRoutes.payments)}
+          >
             Payments
           </button>
-          <button className={btnStyle} onClick={() => router.push("/codes")}>
+          <button
+            className={btnStyle}
+            onClick={() => router.push(applicationRoutes.codes)}
+          >
             Codes
           </button>
-          <button className={btnStyle} onClick={() => router.push("/pt-ilc")}>
+          <button
+            className={btnStyle}
+            onClick={() => router.push(applicationRoutes.ptIlc)}
+          >
             PT and ILC
           </button>
           <button
             className={btnStyle}
-            onClick={() => router.push("/calibrations")}
+            onClick={() => router.push(applicationRoutes.calibrations)}
           >
             Calibrations
           </button>
-          <button className={btnStyle} onClick={() => router.push("/reports")}>
+          <button
+            className={btnStyle}
+            onClick={() => router.push(applicationRoutes.reports)}
+          >
             Reports{" "}
           </button>
           <button
             className={btnStyle}
-            onClick={() => router.push("/quotations")}
+            onClick={() => router.push(applicationRoutes.quotations)}
           >
             Quotations{" "}
           </button>
           <button
             className={btnStyle}
-            onClick={() => router.push("/service-request")}
+            onClick={() => router.push(applicationRoutes.serviceRequests)}
           >
             Service Requests
           </button>
