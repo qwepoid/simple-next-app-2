@@ -35,6 +35,7 @@ import {
   equipmentsRouter,
   quotationRouter,
   scopeRouter,
+  googleSheetsRouter,
 } from "./routes/index.js";
 import mongoose from "mongoose";
 import fs from "fs";
@@ -148,6 +149,7 @@ app.get("/nabl-logo", (req, res) => {
 
 app.use("/pt", ptRouter);
 app.use("/scope", scopeRouter);
+app.use("/sync", googleSheetsRouter);
 
 app.use("/pdf", pdfRouter);
 
